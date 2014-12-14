@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,7 +32,10 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        defaultOperation();
+    }
 
+    public void defaultOperation(){
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -49,6 +53,7 @@ public class MainActivity extends ActionBarActivity
         fragmentManager.beginTransaction()
                 .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
                 .commit();
+        Log.d("onNavigationDrawerItemSelected","position + 1 : " + (position + 1));
     }
 
     public void onSectionAttached(int number) {
@@ -110,7 +115,7 @@ public class MainActivity extends ActionBarActivity
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
-
+        private static int section = 0;
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -120,6 +125,8 @@ public class MainActivity extends ActionBarActivity
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
+            section = sectionNumber;
+
             return fragment;
         }
 
@@ -129,7 +136,21 @@ public class MainActivity extends ActionBarActivity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            Log.d("PlaceholderFragment","ARG_SECTION_NUMBER : " + section);
+            View rootView = null;
+            switch (section){
+                case 1:
+                    rootView = inflater.inflate(R.layout.fragment_home, container, false);
+                    break;
+                case 2:
+                    rootView = inflater.inflate(R.layout.fragment_ask_for_help, container, false);
+                    break;
+                case 3:
+                    rootView = inflater.inflate(R.layout.fragment_chat_room, container, false);
+                    break;
+            }
+
             return rootView;
         }
 
