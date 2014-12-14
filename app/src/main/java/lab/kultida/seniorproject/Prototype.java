@@ -1,32 +1,64 @@
 package lab.kultida.seniorproject;
 
-import android.app.Activity;
-import android.view.Menu;
-import android.view.MenuItem;
-
 /**
  * Created by ekapop on 14/12/2557.
  */
-public class Prototype extends Activity {
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+
+import android.app.Activity;
+import android.support.v4.app.Fragment;
+import android.view.View;
+
+import org.apache.http.conn.util.InetAddressUtils;
+
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Collections;
+import java.util.List;
+
+public class Prototype extends Fragment implements View.OnClickListener{
+    protected Activity activity;
+    protected boolean debugging_mode = true;
+
+    protected void defaultOperation(){
+        setRetainInstance(true);
+        activity = getActivity();
+    }
+
+    protected void getComponent(){
+        activity = getActivity();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public void onClick(View v) {
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+    }
 
-        return super.onOptionsItemSelected(item);
+    public static String getIPAddress(boolean useIPv4) {
+        // useIPv4 = true  >> IPv4
+        //  	   = false >> IPv6
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces) {
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress().toUpperCase();
+                        boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
+                        if (useIPv4) {
+                            if (isIPv4)
+                                return sAddr;
+                        } else {
+                            if (!isIPv4) {
+                                int delim = sAddr.indexOf('%'); // drop ip6 port suffix
+                                return delim<0 ? sAddr : sAddr.substring(0, delim);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) { } // for now eat exceptions
+        return "";
     }
 }
+
+

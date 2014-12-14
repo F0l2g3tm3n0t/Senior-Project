@@ -1,18 +1,15 @@
 package lab.kultida.seniorproject;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 
 public class MainActivity extends ActionBarActivity
@@ -27,12 +24,15 @@ public class MainActivity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    protected String lastTag = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         defaultOperation();
+
+
     }
 
     public void defaultOperation(){
@@ -50,24 +50,64 @@ public class MainActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
-        Log.d("onNavigationDrawerItemSelected","position + 1 : " + (position + 1));
-    }
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if(!lastTag.matches("")){
+            Fragment lastFragment = fragmentManager.findFragmentByTag( lastTag );
+            if ( lastFragment != null ) {
+                transaction.hide( lastFragment );
+            }
+            Log.d("hide last tag",lastTag);
+        }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
+        Fragment temp;
+        switch (position){
+            case 0:
+                lastTag = "home";
+                temp = fragmentManager.findFragmentByTag(lastTag);
+                if(temp != null){
+                    transaction.show(temp);
+                    Log.d(lastTag + " switch","temp != null");
+                }else{
+                    transaction.add(R.id.container,new PlaceholderFragment_Home(),lastTag);
+                    transaction.addToBackStack(null);
+                    Log.d(lastTag + "switch","temp == null");
+                }
+                transaction.commit();
                 mTitle = getString(R.string.title_section1);
                 break;
-            case 2:
+
+            case 1:
+                lastTag = "askForHelp";
+                temp = fragmentManager.findFragmentByTag(lastTag);
+                if(temp != null){
+                    transaction.show(temp);
+                    Log.d(lastTag + " switch","temp != null");
+                }else{
+                    transaction.add(R.id.container,new PlaceholderFragment_AskForHelp(),lastTag);
+                    transaction.addToBackStack(null);
+                    Log.d(lastTag + "switch","temp == null");
+                }
+                transaction.commit();
                 mTitle = getString(R.string.title_section2);
                 break;
-            case 3:
+
+            case 2:
+                lastTag = "chatRoom";
+                temp = fragmentManager.findFragmentByTag(lastTag);
+                if(temp != null){
+                    transaction.show(temp);
+                    Log.d(lastTag + " switch","temp != null");
+                }else{
+                    transaction.add(R.id.container,new PlaceholderFragment_ChatRoom(),lastTag);
+                    transaction.addToBackStack(null);
+                    Log.d(lastTag + "switch","temp == null");
+                }
+                transaction.commit();
                 mTitle = getString(R.string.title_section3);
                 break;
         }
+
+//        Log.d("onNavigationDrawerItemSelected","position + 1 : " + (position + 1));
     }
 
     public void restoreActionBar() {
@@ -76,7 +116,6 @@ public class MainActivity extends ActionBarActivity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -104,61 +143,5 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-        private static int section = 0;
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            section = sectionNumber;
-
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-
-            Log.d("PlaceholderFragment","ARG_SECTION_NUMBER : " + section);
-            View rootView = null;
-            switch (section){
-                case 1:
-                    rootView = inflater.inflate(R.layout.fragment_home, container, false);
-                    break;
-                case 2:
-                    rootView = inflater.inflate(R.layout.fragment_ask_for_help, container, false);
-                    break;
-                case 3:
-                    rootView = inflater.inflate(R.layout.fragment_chat_room, container, false);
-                    break;
-            }
-
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
     }
 }
