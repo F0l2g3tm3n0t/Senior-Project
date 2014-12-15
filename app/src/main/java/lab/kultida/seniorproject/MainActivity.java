@@ -1,5 +1,9 @@
 package lab.kultida.seniorproject;
 
+import android.content.Context;
+import android.net.wifi.WifiConfiguration;
+import android.net.*;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +14,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity
@@ -138,10 +144,57 @@ public class MainActivity extends ActionBarActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.connectWifi) {
+            try {
+                connectToWifi();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /*Connect To WIFI*/
+    public void connectToWifi(){
+        String networkSSID = "My_AP_Pi2";
+        String networkPass = "";
+        WifiConfiguration conf = new WifiConfiguration();
+        conf.SSID = "\"" + networkSSID + "\"";
+
+        //For WEP authen
+		/*
+		conf.wepKeys[0] = "\"" + networkPass + "\"";
+		conf.wepTxKeyIndex = 0;
+		conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+		conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+		*/
+
+        //For WPA authen
+		/*
+		conf.preSharedKey = "\""+ networkPass +"\"";
+		*/
+
+        //For Open network
+        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+
+        //Add config to Wifi Manager
+
+        WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
+        wifiManager.addNetwork(conf);
+
+        //enable Wifi
+
+        List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+        for( WifiConfiguration i : list ) {
+            if(i.SSID != null && i.SSID.equals("\"" + networkSSID + "\"")) {
+                wifiManager.disconnect();
+                wifiManager.enableNetwork(i.networkId, true);
+                wifiManager.reconnect();
+
+                break;
+            }
+        }
     }
 }
