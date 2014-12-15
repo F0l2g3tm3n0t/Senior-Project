@@ -44,7 +44,6 @@ public class UDPClient_Unicast extends AsyncTask<String, Void, String> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return "";
     }
 

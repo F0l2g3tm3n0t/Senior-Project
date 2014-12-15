@@ -22,11 +22,7 @@ public class PlaveholderFragment_Prototype extends Fragment implements View.OnCl
         setRetainInstance(true);
         activity = getActivity();
     }
-
-    protected void getComponent(){
-        activity = getActivity();
-    }
-
+    
     @Override
     public void onClick(View v) {
 

@@ -46,7 +46,7 @@ public class MainActivity extends ActionBarActivity
         defaultOperation();
     }
 
-    public void defaultOperation(){
+    protected void defaultOperation(){
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -162,7 +162,7 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void checkIPAndServerConnection(){
+    protected void checkIPAndServerConnection(){
         setProgressBarIndeterminateVisibility(true);
         AlertDialog.Builder adb_CheckIp = new AlertDialog.Builder(this);
         adb_CheckIp.setTitle("Check IP Address");
@@ -178,12 +178,12 @@ public class MainActivity extends ActionBarActivity
         setProgressBarIndeterminateVisibility(false);
     }
 
-    public String checkServerConnection(){
+    protected String checkServerConnection(){
         //TODO
         return "connected";
     }
 
-    public static String getIPAddress(boolean useIPv4) {
+    protected String getIPAddress(boolean useIPv4) {
         // useIPv4 = true  >> IPv4
         //  	   = false >> IPv6
         try {
@@ -211,7 +211,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     /*Connect To WIFI*/
-    public void connectToWifi(){
+    protected void connectToWifi(){
         setProgressBarIndeterminateVisibility(true);
         String networkSSID = "My_AP_Pi2";
         String networkPass = "";
@@ -240,7 +240,7 @@ public class MainActivity extends ActionBarActivity
         wifiManager.addNetwork(conf);
 
         //enable Wifi
-        while(wifiManager.isWifiEnabled() == false){
+        while(!wifiManager.isWifiEnabled()){
             wifiManager.setWifiEnabled(true);
         }
 
@@ -250,16 +250,27 @@ public class MainActivity extends ActionBarActivity
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(i.networkId, true);
                 wifiManager.reconnect();
-
+                while(!wifiManager.getConnectionInfo().getSSID().contains(networkSSID)){}
                 AlertDialog.Builder adb_ConnectWIFI = new AlertDialog.Builder(this);
                 adb_ConnectWIFI.setTitle("Connect WIFI");
-                adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " complete");
+                adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " complete" + "\nThis device will connect to Rescue's WIFI in few second");
                 adb_ConnectWIFI.setPositiveButton("Ok", null);
+                adb_ConnectWIFI.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        connectToWifi();
+                    }
+                });
                 adb_ConnectWIFI.show();
                 setProgressBarIndeterminateVisibility(false);
-                break;
+                return;
             }
         }
+        AlertDialog.Builder adb_ConnectWIFI = new AlertDialog.Builder(this);
+        adb_ConnectWIFI.setTitle("Connect WIFI");
+        adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " fail");
+        adb_ConnectWIFI.setPositiveButton("Ok", null);
+        adb_ConnectWIFI.show();
         setProgressBarIndeterminateVisibility(false);
     }
 }
