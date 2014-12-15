@@ -68,7 +68,7 @@ public class PlaceholderFragment_AskForHelp extends PlaveholderFragment_Prototyp
 
 
 //  <<--------------------------  ASYNTASK OPERATION  ------------------------->>
-    protected class UDPClient_Unicast_AskForHelp extends UDPClient_Unicast{
+    protected class UDPClient_Unicast_AskForHelp extends UDPClient_Unicast {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -78,6 +78,7 @@ public class PlaceholderFragment_AskForHelp extends PlaveholderFragment_Prototyp
         @Override
         protected void onPostExecute(String result) {
             textView_Output.append("\n\n" + condition.toString());
+            textView_Output.append("\n" + result);
             socket.close();
         }
     }
