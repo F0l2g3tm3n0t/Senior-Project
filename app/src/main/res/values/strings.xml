@@ -14,5 +14,9 @@
     <string name="action_example">Example action</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string-array name="signal_array">
+        <item>RED</item>
+        <item>YELLOW</item>
+        <item>GREEN</item>
+    </string-array>
 </resources>
