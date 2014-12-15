@@ -18,6 +18,12 @@ import java.util.List;
 public class Prototype extends Fragment implements View.OnClickListener{
     protected Activity activity;
     protected boolean debugging_mode = true;
+    protected View rootView;
+
+    protected String serverIP;
+    protected int serverPort;
+    protected int clientPort;
+
 
     protected void defaultOperation(){
         setRetainInstance(true);

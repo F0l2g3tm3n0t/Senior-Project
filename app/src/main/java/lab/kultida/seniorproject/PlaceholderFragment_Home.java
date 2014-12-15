@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 public class PlaceholderFragment_Home extends Prototype{
     protected TextView textView;
-    protected View rootView;
     protected Button button;
 
     @Override
