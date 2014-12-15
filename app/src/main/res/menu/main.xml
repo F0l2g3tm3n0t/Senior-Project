@@ -3,14 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="lab.kultida.seniorproject.MainActivity">
     <item
-        android:id="@+id/action_example"
-        android:title="@string/action_example"
+        android:id="@+id/checkIp"
+        android:title="Check Ip"
         android:orderInCategory="1"
         android:showAsAction="withText|ifRoom" />
 
     <item
         android:id="@+id/connectWifi"
-        android:title="connect_Wifi"
+        android:title="Connect Wifi"
         android:orderInCategory="2"
         android:showAsAction="withText|ifRoom" />
 

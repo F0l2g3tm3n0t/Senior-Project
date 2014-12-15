@@ -1,5 +1,7 @@
 package lab.kultida.seniorproject;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -12,7 +14,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 
+import org.apache.http.conn.util.InetAddressUtils;
+
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -32,11 +40,10 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         defaultOperation();
-
-
     }
 
     public void defaultOperation(){
@@ -48,6 +55,7 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
     }
 
     @Override
@@ -142,20 +150,69 @@ public class MainActivity extends ActionBarActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.connectWifi) {
-            try {
+        switch (item.getItemId()) {
+            case R.id.checkIp :
+                checkIPAndServerConnection();
+                break;
+            case R.id.connectWifi :
                 connectToWifi();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-            return true;
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    public void checkIPAndServerConnection(){
+        setProgressBarIndeterminateVisibility(true);
+        AlertDialog.Builder adb_CheckIp = new AlertDialog.Builder(this);
+        adb_CheckIp.setTitle("Check IP Address");
+        adb_CheckIp.setMessage("IP Address : " + getIPAddress(true) + "\nServer Connection : " + checkServerConnection());
+        adb_CheckIp.setPositiveButton("OK", null);
+        adb_CheckIp.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                checkIPAndServerConnection();
+            }
+        });
+        adb_CheckIp.show();
+        setProgressBarIndeterminateVisibility(false);
+    }
+
+    public String checkServerConnection(){
+        //TODO
+        return "connected";
+    }
+
+    public static String getIPAddress(boolean useIPv4) {
+        // useIPv4 = true  >> IPv4
+        //  	   = false >> IPv6
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces) {
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress().toUpperCase();
+                        boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
+                        if (useIPv4) {
+                            if (isIPv4)
+                                return sAddr;
+                        } else {
+                            if (!isIPv4) {
+                                int delim = sAddr.indexOf('%'); // drop ip6 port suffix
+                                return delim<0 ? sAddr : sAddr.substring(0, delim);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) { } // for now eat exceptions
+        return "";
+    }
+
     /*Connect To WIFI*/
     public void connectToWifi(){
+        setProgressBarIndeterminateVisibility(true);
         String networkSSID = "My_AP_Pi2";
         String networkPass = "";
         WifiConfiguration conf = new WifiConfiguration();
@@ -183,6 +240,9 @@ public class MainActivity extends ActionBarActivity
         wifiManager.addNetwork(conf);
 
         //enable Wifi
+        while(wifiManager.isWifiEnabled() == false){
+            wifiManager.setWifiEnabled(true);
+        }
 
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
         for( WifiConfiguration i : list ) {
@@ -191,8 +251,15 @@ public class MainActivity extends ActionBarActivity
                 wifiManager.enableNetwork(i.networkId, true);
                 wifiManager.reconnect();
 
+                AlertDialog.Builder adb_ConnectWIFI = new AlertDialog.Builder(this);
+                adb_ConnectWIFI.setTitle("Connect WIFI");
+                adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " complete");
+                adb_ConnectWIFI.setPositiveButton("Ok", null);
+                adb_ConnectWIFI.show();
+                setProgressBarIndeterminateVisibility(false);
                 break;
             }
         }
+        setProgressBarIndeterminateVisibility(false);
     }
 }

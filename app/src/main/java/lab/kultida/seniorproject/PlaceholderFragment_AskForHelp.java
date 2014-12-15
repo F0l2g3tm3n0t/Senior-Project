@@ -18,7 +18,7 @@ import org.json.JSONObject;
 
 import lab.kultida.utility.UDPClient_Unicast;
 
-public class PlaceholderFragment_AskForHelp extends Prototype {
+public class PlaceholderFragment_AskForHelp extends PlaveholderFragment_Prototype {
 
     EditText editText_Annotation;
     Spinner spinner_Signal;
@@ -78,6 +78,7 @@ public class PlaceholderFragment_AskForHelp extends Prototype {
         @Override
         protected void onPostExecute(String result) {
             textView_Output.append("\n\n" + condition.toString());
+            socket.close();
         }
     }
 }

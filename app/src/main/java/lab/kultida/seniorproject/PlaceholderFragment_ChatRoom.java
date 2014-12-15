@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import lab.kultida.utility.UDPClient_Boardcast;
 
-public class PlaceholderFragment_ChatRoom extends Prototype {
+public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {

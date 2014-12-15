@@ -2,16 +2,11 @@ package lab.kultida.utility;
 
 import android.os.AsyncTask;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 
 /**
  * Created by ekapop on 15/12/2557.
@@ -46,9 +41,7 @@ public class UDPClient_Unicast extends AsyncTask<String, Void, String> {
             DatagramPacket sendPacket = new DatagramPacket(data_byte,data_byte.length,serverIP,serverPort);
             socket.send(sendPacket);
 
-        } catch (JSONException | UnknownHostException | UnsupportedEncodingException | SocketException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
