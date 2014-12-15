@@ -22,6 +22,8 @@ public class Prototype extends Fragment implements View.OnClickListener{
 
     protected String serverIP = "192.168.42.11";
     protected int serverPort = 9998;
+    protected int clientPort = 45807;
+
 
     protected void defaultOperation(){
         setRetainInstance(true);

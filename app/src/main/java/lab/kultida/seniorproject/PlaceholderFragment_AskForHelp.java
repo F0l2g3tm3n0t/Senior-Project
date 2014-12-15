@@ -49,6 +49,7 @@ public class PlaceholderFragment_AskForHelp extends Prototype {
                 try {
                     condition.put("serverIP", serverIP);
                     condition.put("serverPort",serverPort);
+                    condition.put("clientPort",clientPort);
                     JSONObject data = new JSONObject();
                     data.put("annotation", editText_Annotation.getText());
                     data.put("signal",spinner_Signal.getSelectedItem().toString());

@@ -37,9 +37,10 @@ public class UDPClient_Unicast extends AsyncTask<String, Void, String> {
 
             this.serverIP = InetAddress.getByName(condition.getString("serverIP"));
             this.serverPort = Integer.parseInt(condition.getString("serverPort"));
+            this.clientPort = Integer.parseInt(condition.getString("clientPort"));
             data_byte = condition.getJSONObject("data").toString().getBytes("UTF-8");
 
-            socket = new DatagramSocket();
+            socket = new DatagramSocket(clientPort);
             socket.setSoTimeout(300);
 
             DatagramPacket sendPacket = new DatagramPacket(data_byte,data_byte.length,serverIP,serverPort);
