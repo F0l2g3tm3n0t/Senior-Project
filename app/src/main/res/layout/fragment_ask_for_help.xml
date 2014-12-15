@@ -12,7 +12,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:id="@+id/linearLayout">
 
         <TextView
             android:layout_width="match_parent"
@@ -33,7 +34,8 @@
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/spinner_Signal" />
+            android:id="@+id/spinner_Signal"
+            android:entries="@array/signal_array" />
 
         <Button
             android:layout_width="match_parent"
@@ -41,13 +43,14 @@
             android:text="Ask For Help"
             android:id="@+id/button_AskForHelp"
             android:layout_gravity="center_horizontal" />
-    </LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView_Output"
-        android:maxLines="300"
-        android:scrollbars="horizontal|vertical" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView_Output"
+            android:maxLines="300"
+            android:scrollbars="horizontal|vertical" />
+
+    </LinearLayout>
 
 </RelativeLayout>
