@@ -26,8 +26,8 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="CHAT ROOM"
             android:id="@+id/textView_Head"
-            android:gravity="center"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center"
+            android:gravity="center" />
 
         <TextView
             android:layout_width="match_parent"
@@ -41,7 +41,18 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true">
+            android:layout_alignParentRight="true"
+            android:overScrollFooter="@android:color/holo_blue_bright"
+            android:overScrollHeader="@android:color/holo_blue_bright"
+            android:layout_gravity="bottom"
+            android:scrollingCache="true"
+            android:stackFromBottom="true"
+            android:smoothScrollbar="true"
+            android:nestedScrollingEnabled="true"
+            android:fastScrollAlwaysVisible="false"
+            android:fastScrollEnabled="false"
+            android:headerDividersEnabled="false"
+            android:footerDividersEnabled="false">
         </ListView>
 
     </LinearLayout>

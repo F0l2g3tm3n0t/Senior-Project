@@ -1,42 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
     <TableRow
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:id="@+id/tableRow" >
+        android:id="@+id/tableRow">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/linearLayout_Description">
-
-            <TextView
-                android:id="@+id/textView_User"
-                android:text="User"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            android:id="@+id/linearLayout_Main">
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/linearLayout_Main" >
+                android:layout_weight="1"
+                android:id="@+id/linearLayout_UserTime">
 
                 <TextView
-                    android:id="@+id/textView_Message"
-                    android:text="Message"
+                    android:id="@+id/textView_User"
+                    android:text="User"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textSize="10dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textView_Colon"
+                    android:text=":"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textIsSelectable="false"
+                    android:textSize="10dp" />
 
                 <TextView
                     android:id="@+id/textView_Time"
                     android:text="Time"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textIsSelectable="false"
+                    android:textSize="10dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/linearLayout_Message"
+                android:layout_gravity="right"
+                android:gravity="right">
+
+                <TextView
+                    android:id="@+id/textView_SpaceLeft"
+                    android:text="   "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textIsSelectable="false"
+                    android:textSize="10dp" />
+
+                <TextView
+                    android:id="@+id/textView_Message"
+                    android:text="Message"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/textView_SpaceRight"
+                    android:text="   "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textIsSelectable="false"
+                    android:textSize="10dp" />
             </LinearLayout>
 
         </LinearLayout>
