@@ -1,8 +1,6 @@
 package lab.kultida.seniorproject;
 
-import android.content.Context;
 import android.net.wifi.WifiConfiguration;
-import android.net.*;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

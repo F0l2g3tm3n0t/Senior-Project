@@ -47,9 +47,8 @@ public class PlaceholderFragment_AskForHelp extends Prototype {
             case R.id.button_AskForHelp:
                 JSONObject condition = new JSONObject();
                 try {
-                    condition.put("serverIP",serverIP);
+                    condition.put("serverIP", serverIP);
                     condition.put("serverPort",serverPort);
-                    condition.put("clientPort",clientPort);
                     JSONObject data = new JSONObject();
                     data.put("annotation", editText_Annotation.getText());
                     data.put("signal",spinner_Signal.getSelectedItem().toString());
@@ -77,7 +76,7 @@ public class PlaceholderFragment_AskForHelp extends Prototype {
 
         @Override
         protected void onPostExecute(String result) {
-
+            textView_Output.append("\n\n" + condition.toString());
         }
     }
 }

@@ -20,10 +20,8 @@ public class Prototype extends Fragment implements View.OnClickListener{
     protected boolean debugging_mode = true;
     protected View rootView;
 
-    protected String serverIP;
-    protected int serverPort;
-    protected int clientPort;
-
+    protected String serverIP = "192.168.42.11";
+    protected int serverPort = 9998;
 
     protected void defaultOperation(){
         setRetainInstance(true);
