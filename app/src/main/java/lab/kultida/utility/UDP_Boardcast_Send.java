@@ -37,7 +37,7 @@ public class UDP_Boardcast_Send extends AsyncTask<String, Void, String> {
             clientPort = condition.getInt("clientPort");
             data_byte = condition.getJSONObject("data").toString().getBytes("UTF-8");
 
-            socket = new DatagramSocket(clientPort);
+            socket = new DatagramSocket();
             socket.setBroadcast(true);
             DatagramPacket packet = new DatagramPacket(data_byte, data_byte.length, broadcastIP, serverPort);
             socket.send(packet);
