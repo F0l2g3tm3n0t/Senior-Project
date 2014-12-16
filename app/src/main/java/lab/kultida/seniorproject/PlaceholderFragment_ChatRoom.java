@@ -60,7 +60,7 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        new UDP_Boardcast_Receive_ChatRoom().execute();
+        new UDP_Boardcast_Receive_ChatRoom().execute(data.toString());
 
         return rootView;
     }
@@ -213,6 +213,20 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
                 e.printStackTrace();
             }
             addChatMessage(data, false);
+
+
+	        /*
+	            ------------------
+	            Start Server Again
+	            ------------------
+	         */
+	        JSONObject newData = new JSONObject();
+	        try {
+		        newData.put("clientPort",clientPort);
+	        } catch (JSONException e) {
+		        e.printStackTrace();
+	        }
+	        new UDP_Boardcast_Receive_ChatRoom().execute(newData.toString());
         }
     }
 }
