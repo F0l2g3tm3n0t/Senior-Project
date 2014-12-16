@@ -18,7 +18,7 @@ import org.json.JSONObject;
 
 import lab.kultida.utility.UDP_Unicast_Send;
 
-public class PlaceholderFragment_AskForHelp extends PlaveholderFragment_Prototype {
+public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototype {
 
     protected EditText editText_Annotation;
     protected Spinner spinner_Signal;

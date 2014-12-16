@@ -8,7 +8,7 @@ import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
-public class PlaveholderFragment_Prototype extends Fragment implements View.OnClickListener{
+public class PlaceholderFragment_Prototype extends Fragment implements View.OnClickListener{
     protected Activity activity;
     protected boolean debugging_mode = true;
     protected View rootView;

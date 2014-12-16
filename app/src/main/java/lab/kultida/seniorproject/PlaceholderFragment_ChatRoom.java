@@ -30,7 +30,7 @@ import lab.kultida.utility.UDP_Boardcast_Send;
 
 import static android.content.Context.WIFI_SERVICE;
 
-public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype {
+public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype {
     protected ListView listView_Chatroom;
     protected ChatListView adapter;
     protected TextView textView_Info;

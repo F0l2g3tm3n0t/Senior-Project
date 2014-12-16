@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class PlaceholderFragment_Home extends PlaveholderFragment_Prototype {
+public class PlaceholderFragment_Home extends PlaceholderFragment_Prototype {
     protected TextView textView;
     protected Button button;
 
