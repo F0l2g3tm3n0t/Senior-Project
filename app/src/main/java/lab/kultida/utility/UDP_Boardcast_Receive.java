@@ -13,7 +13,7 @@ import java.net.DatagramSocket;
  */
 public class UDP_Boardcast_Receive extends AsyncTask<String, Void, String> {
     protected DatagramSocket socket;
-    protected int clientPort;
+    protected int serverPort;
     protected JSONObject condition;
 
 
@@ -24,21 +24,24 @@ public class UDP_Boardcast_Receive extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... arg0) {
-        byte[] buf = new byte[1024];
-
+        byte[] buf = new byte[3000];
+		Log.d("Receive","start");
         try {
             condition = new JSONObject(arg0[0]);
-            clientPort = condition.getInt("clientPort");
-
-            socket = new DatagramSocket(clientPort);
+	        serverPort = condition.getInt("serverPort");
+	        Log.d("Receive", serverPort + "");
+            socket = new DatagramSocket(serverPort);
             socket.setBroadcast(true);
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
-            socket.receive(packet);
-
-            String msg = new String(packet.getData());
-            Log.d("Message",msg);
-	        socket.close();
-            return msg;
+	        if(!socket.isConnected()) {
+		        Log.d("Receive", "Socket connected");
+		        socket.receive(packet);
+		        String msg = new String(packet.getData());
+		        Log.d("Receive - message", msg);
+		        socket.close();
+		        Log.d("Receive", "socket closed");
+		        return msg;
+	        }
         }catch (Exception e){
             Log.d("Exception Error : ",e.getMessage());
             e.printStackTrace();
