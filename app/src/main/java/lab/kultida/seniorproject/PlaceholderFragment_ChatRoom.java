@@ -36,7 +36,8 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
     protected SimpleDateFormat time;
     protected SimpleDateFormat date;
     protected String myUser = "Anonymous";
-    protected int clientPort = 20394;
+	protected int clientPort = 20394;
+	protected int serverPort = 22220;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -139,6 +140,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
     public void addChatMessage(JSONObject data){
         try {
             data.put("clientPort",clientPort);
+	        data.put("serverPort",serverPort);
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -33,13 +33,13 @@ public class UDP_Boardcast_Send extends AsyncTask<String, Void, String> {
             condition = new JSONObject(arg0[0]);
 	        Log.d("condition", condition.toString());
 	        Log.d("--","------------------------------------------");
-            serverPort = condition.getInt("clientPort");
+            serverPort = condition.getInt("serverPort");
             clientPort = condition.getInt("clientPort");
             data_byte = condition.getJSONObject("data").toString().getBytes("UTF-8");
 
-            socket = new DatagramSocket(22220);
+            socket = new DatagramSocket(clientPort);
             socket.setBroadcast(true);
-            DatagramPacket packet = new DatagramPacket(data_byte, data_byte.length, broadcastIP, 22220);
+            DatagramPacket packet = new DatagramPacket(data_byte, data_byte.length, broadcastIP, serverPort);
             socket.send(packet);
 	        Log.d("send broadcast","finish");
 	        socket.close();
