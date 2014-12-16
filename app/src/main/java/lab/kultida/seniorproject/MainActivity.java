@@ -2,6 +2,8 @@ package lab.kultida.seniorproject;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -23,6 +25,8 @@ import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
 
+import lab.kultida.utility.JSON_Parser;
+
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -37,9 +41,6 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
     protected String lastTag = "";
-    Menu menu;
-    MenuItem menu_saveChatLog;
-    MenuItem menu_clearChatLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,15 +75,6 @@ public class MainActivity extends ActionBarActivity
             Log.d("hide last tag",lastTag);
         }
 
-        if(menu_saveChatLog != null){
-            Log.d("menu","not null");
-            menu_saveChatLog.setVisible(false);
-            menu_clearChatLog.setVisible(false);
-            this.invalidateOptionsMenu();
-        }else{
-            Log.d("menus","null");
-        }
-
         Fragment temp;
         switch (position){
             case 0:
@@ -98,10 +90,6 @@ public class MainActivity extends ActionBarActivity
                 }
                 transaction.commit();
                 mTitle = getString(R.string.title_section1);
-
-//                if(menu_saveChatLog != null) menu_saveChatLog.setVisible(false);
-//                if(menu_saveChatLog != null) menu_clearChatLog.setVisible(false);
-//                this.invalidateOptionsMenu();
                 break;
 
             case 1:
@@ -117,10 +105,6 @@ public class MainActivity extends ActionBarActivity
                 }
                 transaction.commit();
                 mTitle = getString(R.string.title_section2);
-
-//                if(menu_saveChatLog != null) menu_saveChatLog.setVisible(false);
-//                if(menu_saveChatLog != null) menu_clearChatLog.setVisible(false);
-//                this.invalidateOptionsMenu();
                 break;
 
             case 2:
@@ -136,10 +120,6 @@ public class MainActivity extends ActionBarActivity
                 }
                 transaction.commit();
                 mTitle = getString(R.string.title_section3);
-
-//                if(menu_saveChatLog != null) menu_saveChatLog.setVisible(true);
-//                if(menu_saveChatLog != null) menu_clearChatLog.setVisible(true);
-//                this.invalidateOptionsMenu();
                 break;
         }
 
@@ -161,9 +141,6 @@ public class MainActivity extends ActionBarActivity
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.menu_main, menu);
             restoreActionBar();
-            this.menu = menu;
-            menu_saveChatLog = menu.findItem(R.id.action_saveChatLog);
-            menu_clearChatLog = menu.findItem(R.id.action_clearChatLog);
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -182,9 +159,16 @@ public class MainActivity extends ActionBarActivity
             case R.id.connectWifi :
                 connectToWifi();
                 break;
+            case R.id.action_getJSONData:
+                getJSONData();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void getJSONData(){
+        new JSON_Parser_MainActivity().execute("192.168.42.1","9090");
     }
 
     protected void checkIPAndServerConnection(){
@@ -196,6 +180,7 @@ public class MainActivity extends ActionBarActivity
         adb_CheckIp.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                setProgressBarIndeterminateVisibility(false);
                 checkIPAndServerConnection();
             }
         });
@@ -298,4 +283,56 @@ public class MainActivity extends ActionBarActivity
         adb_ConnectWIFI.show();
         setProgressBarIndeterminateVisibility(false);
     }
+
+
+
+
+
+
+    //  <<--------------------------  ASYNTASK OPERATION  ------------------------->>
+    protected class JSON_Parser_MainActivity extends JSON_Parser {
+        @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility(true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d("JSONParser","end");
+            setProgressBarIndeterminateVisibility(false);
+            Log.d("JSONParser","false");
+            if(!result.contains("fail")){
+                Log.d("JSONParser","complete");
+                AlertDialog.Builder adb_GetJSONData = new AlertDialog.Builder(MainActivity.this);
+                adb_GetJSONData.setTitle("Get JSON Data");
+                adb_GetJSONData.setMessage("Get JSON Data From PI 192.168.42.1:9090 Complete");
+                adb_GetJSONData.setPositiveButton("OK", null);
+                adb_GetJSONData.setNegativeButton("Open File", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent();
+                        intent.setAction(android.content.Intent.ACTION_VIEW);
+                        intent.setDataAndType(Uri.fromFile(file), "text/plain");
+                        startActivity(intent);
+                    }
+                });
+                adb_GetJSONData.show();
+            }else{
+                Log.d("JSONParser","fail");
+                AlertDialog.Builder adb_GetJSONData = new AlertDialog.Builder(MainActivity.this);
+                adb_GetJSONData.setTitle("Get JSON Data");
+                adb_GetJSONData.setMessage("Get JSON Data From PI 192.168.42.1:9090 Failed");
+                adb_GetJSONData.setPositiveButton("OK", null);
+                adb_GetJSONData.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getJSONData();
+                    }
+                });
+                adb_GetJSONData.show();
+            }
+        }
+    }
+
 }

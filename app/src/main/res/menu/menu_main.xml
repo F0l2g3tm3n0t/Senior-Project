@@ -16,15 +16,9 @@
         android:showAsAction="withText|ifRoom" />
 
     <item
-        android:id="@+id/action_saveChatLog"
-        android:title="Save Chat Log"
+        android:id="@+id/action_getJSONData"
+        android:title="Get JSON Data"
         android:orderInCategory="3"
         android:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/action_clearChatLog"
-        android:title="Clear Chat Log"
-        android:orderInCategory="4"
-        android:showAsAction="collapseActionView" />
 
 </menu>
