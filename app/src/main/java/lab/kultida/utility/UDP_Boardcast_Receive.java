@@ -37,10 +37,14 @@ public class UDP_Boardcast_Receive extends AsyncTask<String, Void, String> {
 
             String msg = new String(packet.getData());
             Log.d("Message",msg);
+	        socket.close();
             return msg;
         }catch (Exception e){
             Log.d("Exception Error : ",e.getMessage());
             e.printStackTrace();
+	        if(socket != null){
+		        socket.close();
+	        }
         }
         return "Fail!!";
 }
