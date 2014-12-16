@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import lab.kultida.utility.UDPClient_Boardcast;
+import lab.kultida.utility.UDPServer_Boardcast;
 
 public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype {
     ListView listView_Chatroom;
@@ -47,6 +48,18 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
         createTime();
 
         addChatMessageTest();
+
+        while(true){
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                UDPClient_Boardcast_ChatRoom.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, condition.toString());
+                UDPServer_Boardcast_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
+            else
+//                asyncTask.execute();
+            new UDPClient_Boardcast_ChatRoom().execute();
+            new UDPServer_Boardcast_ChatRoom().execute();
+        }
+
         return rootView;
     }
 
@@ -152,6 +165,19 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
         @Override
         protected void onPostExecute(String result) {
 
+        }
+    }
+
+    protected class UDPServer_Boardcast_ChatRoom extends UDPServer_Boardcast {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            JSONObject json = JSONObject(result);
+            addChatMessage(json.getString("user"), json.getString("message"), json.getString("time"), false);
         }
     }
 }
