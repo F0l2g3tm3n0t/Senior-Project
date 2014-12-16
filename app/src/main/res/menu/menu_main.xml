@@ -4,7 +4,7 @@
     tools:context="lab.kultida.seniorproject.MainActivity">
     <item
         android:id="@+id/checkIp"
-        android:title="Check Ip"
+        android:title="Check Ip Address"
         android:orderInCategory="1"
         android:showAsAction="withText|ifRoom" />
 
@@ -15,9 +15,15 @@
         android:showAsAction="withText|ifRoom" />
 
     <item
-        android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
+        android:id="@+id/action_saveChatLog"
+        android:title="Save Chat Log"
+        android:orderInCategory="3"
+        android:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_clearChatLog"
+        android:title="Clear Chat Log"
+        android:orderInCategory="4"
+        android:showAsAction="collapseActionView" />
 
 </menu>

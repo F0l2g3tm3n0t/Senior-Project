@@ -33,8 +33,9 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
     TextView textView_Info;
     EditText editText_ChatRoom;
     Button button_ChatRoom;
-    Calendar c;
-    SimpleDateFormat df;
+    Calendar calendar;
+    SimpleDateFormat time;
+    SimpleDateFormat date;
     String myUser = "Anonymous";
 
     @Override
@@ -91,22 +92,24 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
         ArrayList<String> user = new ArrayList<>();
         ArrayList<String> message = new ArrayList<>();
         ArrayList<String> time = new ArrayList<>();
+        ArrayList<String> date = new ArrayList<>();
         ArrayList<Boolean> fromMe = new ArrayList<>();
-        adapter = new ChatListView(activity,user,message,time,fromMe);
+        adapter = new ChatListView(activity,user,message,time,date,fromMe);
         listView_Chatroom.setAdapter(adapter);
     }
 
     public void createTime(){
-        c = Calendar.getInstance();
-        df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        calendar = Calendar.getInstance();
+        time = new SimpleDateFormat("HH:mm");
+        date = new SimpleDateFormat("dd-MM-yyyy");
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_ChatRoom:
-                addChatMessage(myUser,editText_ChatRoom.getText().toString(),df.format(c.getTime()),true);
-                Log.d("sendMEssage", myUser + " : " + editText_ChatRoom.getText().toString() + " : " + df.format(c.getTime()));
+                addChatMessage(myUser,editText_ChatRoom.getText().toString(), time.format(calendar.getTime()),date.format(calendar.getTime()),true);
+                Log.d("sendMEssage", myUser + " : " + editText_ChatRoom.getText().toString() + " : " + time.format(calendar.getTime()) + " : " + date.format(calendar.getTime()));
                 break;
         }
     }
@@ -117,6 +120,8 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
             data.put("user","eka");
             data.put("message","Sawasdee Krub");
             data.put("time","14.14");
+            data.put("date",date.format(calendar.getTime()));
+            data.put("fromMe",false);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -130,12 +135,13 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
         adapter.notifyDataSetChanged();
     }
 
-    public void addChatMessage(String user,String message,String time,boolean fromMe){
+    public void addChatMessage(String user,String message,String time,String date,boolean fromMe){
         JSONObject data = new JSONObject();
         try {
             data.put("user",user);
             data.put("message",message);
             data.put("time",time);
+            data.put("date",date);
             data.put("fromMe",fromMe);
         } catch (JSONException e) {
             e.printStackTrace();
