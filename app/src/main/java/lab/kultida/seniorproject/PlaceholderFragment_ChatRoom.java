@@ -211,8 +211,8 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 	        try {
 		        data.put("user", "system");
 		        data.put("message", result);
-		        data.put("time", time);
-		        data.put("date", date);
+		        data.put("time", time.format(calendar.getTime()));
+		        data.put("date", date.format(calendar.getTime()));
 		        data_frame.put("fromMe", false);
 		        data_frame.put("data",data);
 	        } catch (JSONException e) {
