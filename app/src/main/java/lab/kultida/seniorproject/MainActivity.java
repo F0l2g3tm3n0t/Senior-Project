@@ -37,6 +37,9 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
     protected String lastTag = "";
+    Menu menu;
+    MenuItem menu_saveChatLog;
+    MenuItem menu_clearChatLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +63,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
+        // update the menu_main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if(!lastTag.matches("")){
@@ -69,6 +72,15 @@ public class MainActivity extends ActionBarActivity
                 transaction.hide( lastFragment );
             }
             Log.d("hide last tag",lastTag);
+        }
+
+        if(menu_saveChatLog != null){
+            Log.d("menu","not null");
+            menu_saveChatLog.setVisible(false);
+            menu_clearChatLog.setVisible(false);
+            this.invalidateOptionsMenu();
+        }else{
+            Log.d("menus","null");
         }
 
         Fragment temp;
@@ -86,6 +98,10 @@ public class MainActivity extends ActionBarActivity
                 }
                 transaction.commit();
                 mTitle = getString(R.string.title_section1);
+
+//                if(menu_saveChatLog != null) menu_saveChatLog.setVisible(false);
+//                if(menu_saveChatLog != null) menu_clearChatLog.setVisible(false);
+//                this.invalidateOptionsMenu();
                 break;
 
             case 1:
@@ -101,6 +117,10 @@ public class MainActivity extends ActionBarActivity
                 }
                 transaction.commit();
                 mTitle = getString(R.string.title_section2);
+
+//                if(menu_saveChatLog != null) menu_saveChatLog.setVisible(false);
+//                if(menu_saveChatLog != null) menu_clearChatLog.setVisible(false);
+//                this.invalidateOptionsMenu();
                 break;
 
             case 2:
@@ -116,6 +136,10 @@ public class MainActivity extends ActionBarActivity
                 }
                 transaction.commit();
                 mTitle = getString(R.string.title_section3);
+
+//                if(menu_saveChatLog != null) menu_saveChatLog.setVisible(true);
+//                if(menu_saveChatLog != null) menu_clearChatLog.setVisible(true);
+//                this.invalidateOptionsMenu();
                 break;
         }
 
@@ -135,8 +159,11 @@ public class MainActivity extends ActionBarActivity
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
+            getMenuInflater().inflate(R.menu.menu_main, menu);
             restoreActionBar();
+            this.menu = menu;
+            menu_saveChatLog = menu.findItem(R.id.action_saveChatLog);
+            menu_clearChatLog = menu.findItem(R.id.action_clearChatLog);
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -147,8 +174,6 @@ public class MainActivity extends ActionBarActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         switch (item.getItemId()) {
             case R.id.checkIp :
