@@ -12,11 +12,7 @@ public class PlaveholderFragment_Prototype extends Fragment implements View.OnCl
     protected Activity activity;
     protected boolean debugging_mode = true;
     protected View rootView;
-
     protected String serverIP = "192.168.42.11";
-    protected int serverPort = 9998;
-    protected int clientPort = 45808;
-
 
     protected void defaultOperation(){
         setRetainInstance(true);

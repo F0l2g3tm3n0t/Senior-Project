@@ -12,7 +12,7 @@ import java.net.DatagramSocket;
 /**
  * Created by ekapop on 15/12/2557.
  */
-public class UDPClient_Receive extends AsyncTask<String, Void, String> {
+public class UDP_Unicast_Receive extends AsyncTask<String, Void, String> {
     protected DatagramSocket socket;
     protected String result = null;
     protected int clientPort;

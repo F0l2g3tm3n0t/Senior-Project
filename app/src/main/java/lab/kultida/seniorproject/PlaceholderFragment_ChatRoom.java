@@ -6,6 +6,7 @@ package lab.kultida.seniorproject;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,19 +25,23 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import lab.kultida.utility.UDPClient_Boardcast;
-import lab.kultida.utility.UDPServer_Boardcast;
+import lab.kultida.utility.UDP_Boardcast_Receive;
+import lab.kultida.utility.UDP_Boardcast_Send;
+
+import static android.content.Context.WIFI_SERVICE;
 
 public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype {
-    ListView listView_Chatroom;
-    ChatListView adapter;
-    TextView textView_Info;
-    EditText editText_ChatRoom;
-    Button button_ChatRoom;
-    Calendar calendar;
-    SimpleDateFormat time;
-    SimpleDateFormat date;
-    String myUser = "Anonymous";
+    protected ListView listView_Chatroom;
+    protected ChatListView adapter;
+    protected TextView textView_Info;
+    protected EditText editText_ChatRoom;
+    protected Button button_ChatRoom;
+    protected Calendar calendar;
+    protected SimpleDateFormat time;
+    protected SimpleDateFormat date;
+    protected String myUser = "Anonymous";
+    protected int serverPort = 0;
+    protected int clientPort = 20394;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -47,19 +52,15 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
         getComponent();
         createChat();
         createTime();
-
         addChatMessageTest();
 
-        while(true){
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                UDPClient_Boardcast_ChatRoom.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, condition.toString());
-                UDPServer_Boardcast_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, params);
-            else
-//                asyncTask.execute();
-            new UDPClient_Boardcast_ChatRoom().execute();
-            new UDPServer_Boardcast_ChatRoom().execute();
+        JSONObject data = new JSONObject();
+        try {
+            data.put("clientPort",clientPort);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+        new UDP_Boardcast_Receive_ChatRoom().execute();
 
         return rootView;
     }
@@ -109,7 +110,7 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
         switch (v.getId()) {
             case R.id.button_ChatRoom:
                 addChatMessage(myUser,editText_ChatRoom.getText().toString(), time.format(calendar.getTime()),date.format(calendar.getTime()),true);
-                Log.d("sendMEssage", myUser + " : " + editText_ChatRoom.getText().toString() + " : " + time.format(calendar.getTime()) + " : " + date.format(calendar.getTime()));
+                Log.d("sendMessage", myUser + " : " + editText_ChatRoom.getText().toString() + " : " + time.format(calendar.getTime()) + " : " + date.format(calendar.getTime()));
                 break;
         }
     }
@@ -135,6 +136,30 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
         adapter.notifyDataSetChanged();
     }
 
+    public void addChatMessage(JSONObject data){
+        try {
+            data.put("clientPort",serverPort);
+            data.put("clientPort",clientPort);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        new UDP_Boardcast_Send_ChatRoom().execute(data.toString());
+        adapter.addChatMessage(data);
+        adapter.notifyDataSetChanged();
+        listView_Chatroom.setSelection(adapter.getCount() - 1);
+    }
+
+    public void addChatMessage(JSONObject data,boolean fromMe){
+        try {
+            data.put("fromMe",fromMe);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        adapter.addChatMessage(data);
+        adapter.notifyDataSetChanged();
+        listView_Chatroom.setSelection(adapter.getCount() - 1);
+    }
+
     public void addChatMessage(String user,String message,String time,String date,boolean fromMe){
         JSONObject data = new JSONObject();
         try {
@@ -146,15 +171,11 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        adapter.addChatMessage(data);
-        adapter.notifyDataSetChanged();
-        listView_Chatroom.setSelection(adapter.getCount() - 1);
+        addChatMessage(data);
     }
 
-
-
     public void checkInfo(){
-
+        //TODO
     }
 
 
@@ -162,9 +183,10 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
 
 
 //  <<--------------------------  ASYNTASK OPERATION  ------------------------->>
-    protected class UDPClient_Boardcast_ChatRoom extends UDPClient_Boardcast {
+    protected class UDP_Boardcast_Send_ChatRoom extends UDP_Boardcast_Send {
         @Override
         protected void onPreExecute() {
+            wifiManager = (WifiManager)activity.getSystemService(WIFI_SERVICE);
             super.onPreExecute();
         }
 
@@ -174,7 +196,9 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
         }
     }
 
-    protected class UDPServer_Boardcast_ChatRoom extends UDPServer_Boardcast {
+
+
+    protected class UDP_Boardcast_Receive_ChatRoom extends UDP_Boardcast_Receive {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -182,8 +206,13 @@ public class PlaceholderFragment_ChatRoom extends PlaveholderFragment_Prototype 
 
         @Override
         protected void onPostExecute(String result) {
-            JSONObject json = JSONObject(result);
-            addChatMessage(json.getString("user"), json.getString("message"), json.getString("time"), false);
+            JSONObject data = null;
+            try {
+                data = new JSONObject(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            addChatMessage(data, false);
         }
     }
 }

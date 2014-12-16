@@ -122,7 +122,7 @@ public class DummyPacketSimulator extends ActionBarActivity {
 		if(!editText_IpAddress.getText().toString().matches(""))
 			try {
 				connectionInfo.put("serverIp", editText_IpAddress.getText().toString());
-				if(!editText_Port.getText().toString().matches("")) connectionInfo.put("serverPort", editText_Port.getText().toString());
+				if(!editText_Port.getText().toString().matches("")) connectionInfo.put("clientPort", editText_Port.getText().toString());
 				connectionInfo.put("clientPort", port_Client);
 				if(!editText_MessageSize.getText().toString().matches("")) connectionInfo.put("size", editText_MessageSize.getText().toString());
 				connectionInfo.put("loop", loop);

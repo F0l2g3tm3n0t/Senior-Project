@@ -16,14 +16,16 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import lab.kultida.utility.UDPClient_Unicast;
+import lab.kultida.utility.UDP_Unicast_Send;
 
 public class PlaceholderFragment_AskForHelp extends PlaveholderFragment_Prototype {
 
-    EditText editText_Annotation;
-    Spinner spinner_Signal;
-    Button button_AskForHelp;
-    TextView textView_Output;
+    protected EditText editText_Annotation;
+    protected Spinner spinner_Signal;
+    protected Button button_AskForHelp;
+    protected TextView textView_Output;
+    protected int serverPort = 9998;
+    protected int clientPort = 45808;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -48,7 +50,7 @@ public class PlaceholderFragment_AskForHelp extends PlaveholderFragment_Prototyp
                 JSONObject condition = new JSONObject();
                 try {
                     condition.put("serverIP", serverIP);
-                    condition.put("serverPort",serverPort);
+                    condition.put("clientPort",serverPort);
                     condition.put("clientPort",clientPort);
                     JSONObject data = new JSONObject();
                     data.put("annotation", editText_Annotation.getText());
@@ -58,7 +60,7 @@ public class PlaceholderFragment_AskForHelp extends PlaveholderFragment_Prototyp
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                new UDPClient_Unicast_AskForHelp().execute(condition.toString());
+                new UDP_Unicast_Send_AskForHelp().execute(condition.toString());
                 break;
         }
     }
@@ -68,7 +70,7 @@ public class PlaceholderFragment_AskForHelp extends PlaveholderFragment_Prototyp
 
 
 //  <<--------------------------  ASYNTASK OPERATION  ------------------------->>
-    protected class UDPClient_Unicast_AskForHelp extends UDPClient_Unicast {
+    protected class UDP_Unicast_Send_AskForHelp extends UDP_Unicast_Send {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

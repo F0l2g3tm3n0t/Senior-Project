@@ -38,7 +38,7 @@ public class UDPClient implements Runnable {
 			if(connectionInfo.has("serverIp")) this.serverIp = InetAddress.getByName(connectionInfo.getString("serverIp"));
 			else this.serverIp = InetAddress.getByName("127.0.0.1");
 			
-			if(connectionInfo.has("serverPort")) this.serverPort = Integer.parseInt(connectionInfo.getString("serverPort"));
+			if(connectionInfo.has("clientPort")) this.serverPort = Integer.parseInt(connectionInfo.getString("clientPort"));
 			else this.serverPort = DEFAULT_SERVER_PORT;
 			
 			if(connectionInfo.has("clientPort")) this.clientPort = Integer.parseInt(connectionInfo.getString("clientPort"));
@@ -53,7 +53,7 @@ public class UDPClient implements Runnable {
 			this.textView_Status = textView_Status;
 			
 			Log.d("UDPClient - Constructor", "serverIp = " + serverIp.toString());
-			Log.d("UDPClient - Constructor", "serverPort = " + serverPort);
+			Log.d("UDPClient - Constructor", "clientPort = " + serverPort);
 			Log.d("UDPClient - Constructor", "clientPort = " + clientPort);
 			Log.d("UDPClient - Constructor", "loop = " + loop);
 			Log.d("UDPClient - Constructor", "delay = " + delay);
