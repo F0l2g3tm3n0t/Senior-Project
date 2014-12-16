@@ -1,8 +1,7 @@
 package lab.kultida.utility;
 
-import android.net.DhcpInfo;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -10,54 +9,46 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-/**
- * Created by ekapop on 15/12/2557.
- */
 public class UDP_Boardcast_Send extends AsyncTask<String, Void, String> {
     protected InetAddress broadcastIP;
     protected int serverPort;
     protected int clientPort;
     protected JSONObject condition;
     protected DatagramSocket socket;
-    protected WifiManager wifiManager;
 
     @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
+    protected void onPreExecute() { super.onPreExecute(); }
 
     @Override
     protected String doInBackground(String... arg0) {
-        /*
-            --------------------------------
-                 find broadcast address
-            --------------------------------
-         */
+	    Log.d("sending message", "do in background");
 
-
-        DhcpInfo dhcpinfo = wifiManager.getDhcpInfo();
-        //handle null
-        byte[] data_byte;
-        int broadcast = (dhcpinfo.ipAddress & dhcpinfo.netmask ) | ~dhcpinfo.netmask;
-        byte[] quads = new byte[4];
-        for(int k = 0; k < 4; k++){
-            quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
-        }
-
+	    byte[] data_byte;
         try {
-            broadcastIP = InetAddress.getByAddress(quads);
+	        broadcastIP = InetAddress.getByName("192.168.42.255");
+	        Log.d("send broadcast","start");
+	        Log.d("broadcast IP",broadcastIP.getHostAddress());
+	        Log.d("--","------------------------------------------");
+
             condition = new JSONObject(arg0[0]);
+	        Log.d("condition", condition.toString());
+	        Log.d("--","------------------------------------------");
             serverPort = condition.getInt("clientPort");
             clientPort = condition.getInt("clientPort");
             data_byte = condition.getJSONObject("data").toString().getBytes("UTF-8");
 
-            socket = new DatagramSocket(clientPort);
+            socket = new DatagramSocket(22220);
             socket.setBroadcast(true);
-            DatagramPacket packet = new DatagramPacket(data_byte, data_byte.length, broadcastIP, serverPort);
+            DatagramPacket packet = new DatagramPacket(data_byte, data_byte.length, broadcastIP, 22220);
             socket.send(packet);
-
+	        Log.d("send broadcast","finish");
+	        socket.close();
         } catch (Exception e) {
             e.printStackTrace();
+	        Log.d("send broadcast","Exception Error");
+	        if(socket != null) {
+		        socket.close();
+	        }
         }
         return "ok";
     }

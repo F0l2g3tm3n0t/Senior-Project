@@ -31,13 +31,14 @@ public class ChatListView extends ArrayAdapter<String>{
         this.context = context;
     }
 
-    public void addChatMessage(JSONObject data){
+    public void addChatMessage(JSONObject data_frame){
         try {
+	        JSONObject data = data_frame.getJSONObject("data");
             user.add(data.getString("user"));
             message.add(data.getString("message"));
             time.add(data.getString("time"));
             date.add(data.getString("date"));
-            fromMe.add(data.getBoolean("fromMe"));
+            fromMe.add(data_frame.getBoolean("fromMe"));
         }catch (Exception e){
             e.printStackTrace();
         }

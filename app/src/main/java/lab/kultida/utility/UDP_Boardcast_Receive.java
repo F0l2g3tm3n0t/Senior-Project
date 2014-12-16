@@ -35,7 +35,7 @@ public class UDP_Boardcast_Receive extends AsyncTask<String, Void, String> {
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
             socket.receive(packet);
 
-            String msg = new String(packet.getData(), 0, packet.getLength()) + ", from address: " + packet.getAddress().toString().substring(1) + ", port: " + packet.getPort();
+            String msg = new String(packet.getData());
             Log.d("Message",msg);
             return msg;
         }catch (Exception e){
