@@ -33,6 +33,7 @@ public class ChatListView extends ArrayAdapter<String>{
 
     public void addChatMessage(JSONObject data_frame){
         try {
+
 	        JSONObject data = data_frame.getJSONObject("data");
             user.add(data.getString("user"));
             message.add(data.getString("message"));

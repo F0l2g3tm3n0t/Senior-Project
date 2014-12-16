@@ -21,4 +21,10 @@
         android:orderInCategory="3"
         android:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_testAlarm"
+        android:title="Test Alarm"
+        android:orderInCategory="4"
+        android:showAsAction="ifRoom" />
+
 </menu>

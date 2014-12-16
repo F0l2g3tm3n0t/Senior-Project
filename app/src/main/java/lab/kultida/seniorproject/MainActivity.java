@@ -3,6 +3,8 @@ package lab.kultida.seniorproject;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -16,13 +18,20 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.Toast;
 
 import org.apache.http.conn.util.InetAddressUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import lab.kultida.utility.JSON_Parser;
@@ -41,6 +50,8 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
     protected String lastTag = "";
+    protected int selected = 0;
+    protected Ringtone ringtone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +59,7 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         defaultOperation();
+        setUpAlarm();
     }
 
     protected void defaultOperation(){
@@ -162,9 +174,22 @@ public class MainActivity extends ActionBarActivity
             case R.id.action_getJSONData:
                 getJSONData();
                 break;
+            case R.id.action_testAlarm:
+                alarm();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    protected void setUpAlarm(){
+        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+    }
+    protected void alarm() {
+        if(ringtone != null){
+            if(ringtone.isPlaying())ringtone.stop();
+            else ringtone.play();
+        }
     }
 
     protected void getJSONData(){
@@ -298,15 +323,58 @@ public class MainActivity extends ActionBarActivity
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(final String result) {
             Log.d("JSONParser","end");
             setProgressBarIndeterminateVisibility(false);
             Log.d("JSONParser","false");
             if(!result.contains("fail")){
                 Log.d("JSONParser","complete");
+
+                ArrayList<String> arrayList = new ArrayList<>();
+                JSONObject data= null;
+                try {
+                    data = new JSONObject(result);
+                    Iterator keys = data.keys();
+                    while(keys.hasNext()) {
+                        String currentDynamicKey = (String)keys.next();
+                        arrayList.add(currentDynamicKey);
+                        Log.d("currentDynamicKey",currentDynamicKey);
+                        Log.d("data.get(currentDynamicKey).getClass().toString()",data.get(currentDynamicKey).getClass().toString());
+                        Log.d("data.get(currentDynamicKey).toString()",data.get(currentDynamicKey).toString());
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                final String[] data_list = arrayList.toArray(new String[arrayList.size()]);
+                selected = 0;
+                final Button button = new Button(MainActivity.this);
+                button.setText("Filter JSON Data");
                 AlertDialog.Builder adb_GetJSONData = new AlertDialog.Builder(MainActivity.this);
-                adb_GetJSONData.setTitle("Get JSON Data");
-                adb_GetJSONData.setMessage("Get JSON Data From PI 192.168.42.1:9090 Complete");
+                adb_GetJSONData.setTitle("Get JSON Data From PI 192.168.42.1:9090 Complete");
+                adb_GetJSONData.setSingleChoiceItems(data_list, 0, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogInterface, int item) {
+                        selected = item;
+                    }
+                });
+                adb_GetJSONData.setView(button);
+                final JSONObject finalData = data;
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(MainActivity.this, data_list[selected], Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder adb_GetJSONData = new AlertDialog.Builder(MainActivity.this);
+                        adb_GetJSONData.setTitle("Get JSON Data : " + data_list[selected]);
+                        if (finalData != null) {
+                            try {
+                                adb_GetJSONData.setMessage(finalData.get(data_list[selected]).toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        adb_GetJSONData.setPositiveButton("OK", null);
+                        adb_GetJSONData.show();
+                    }
+                });
                 adb_GetJSONData.setPositiveButton("OK", null);
                 adb_GetJSONData.setNegativeButton("Open File", new DialogInterface.OnClickListener() {
                     @Override
