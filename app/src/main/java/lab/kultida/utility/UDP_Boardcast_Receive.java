@@ -44,15 +44,15 @@ public class UDP_Boardcast_Receive extends AsyncTask<String, Void, String> {
 		        String msg = new String(packet.getData());
 		        InetAddress address = packet.getAddress();
 		        InetAddress myAddress = InetAddress.getByName(getIPAddress(true));
+		        Log.d("Receive - message", msg);
 		        if(myAddress == address) {
-			        Log.d("Receive - message", msg);
-			        socket.close();
-			        Log.d("Receive", "socket closed");
-			        return msg;
-		        } else{
 			        socket.close();
 			        Log.d("Receive", "socket closed");
 			        return "Fail!!";
+		        } else{
+			        socket.close();
+			        Log.d("Receive", "socket closed");
+			        return msg;
 		        }
 	        }
         }catch (Exception e){
