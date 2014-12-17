@@ -12,7 +12,7 @@ public class PlaceholderFragment_Prototype extends Fragment implements View.OnCl
     protected Activity activity;
     protected boolean debugging_mode = true;
     protected View rootView;
-    protected String serverIP = "192.168.42.11";
+    protected String serverIP = "1.1.1.99";
 
     protected void defaultOperation(){
         setRetainInstance(true);

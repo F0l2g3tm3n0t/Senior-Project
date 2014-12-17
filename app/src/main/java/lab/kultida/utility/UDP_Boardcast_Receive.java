@@ -43,13 +43,17 @@ public class UDP_Boardcast_Receive extends AsyncTask<String, Void, String> {
 		        socket.receive(packet);
 		        String msg = new String(packet.getData());
 		        InetAddress address = packet.getAddress();
+		        Log.d("Receive", "packet address -> " + address.getHostAddress());
 		        InetAddress myAddress = InetAddress.getByName(getIPAddress(true));
+		        Log.d("Receive", "My address -> " + myAddress.getHostAddress());
 		        Log.d("Receive - message", msg);
-		        if(myAddress == address) {
+		        if(myAddress.getHostAddress().matches(address.getHostAddress())) {
+			        Log.d("Receive", "from myself");
 			        socket.close();
 			        Log.d("Receive", "socket closed");
 			        return "Fail!!";
 		        } else{
+			        Log.d("Receive", "from other");
 			        socket.close();
 			        Log.d("Receive", "socket closed");
 			        return msg;
@@ -62,6 +66,7 @@ public class UDP_Boardcast_Receive extends AsyncTask<String, Void, String> {
 		        socket.close();
 	        }
         }
+	    Log.d("Receive", "no connection");
         return "Fail!!";
 }
 
