@@ -366,7 +366,17 @@ public class MainActivity extends ActionBarActivity
                         adb_GetJSONData.setTitle("Get JSON Data : " + data_list[selected]);
                         if (finalData != null) {
                             try {
-                                adb_GetJSONData.setMessage(finalData.get(data_list[selected]).toString());
+                                String temp = finalData.get(data_list[selected]).toString();
+                                String filter2 = "," +
+                                        "";
+                                String[] temp2 = temp.split(filter2);
+                                String result = "";
+                                for(int i = 0;i < temp2.length;i++){
+                                    result = result + "\n" + temp2[i];
+                                }
+                                temp = result;
+                                Log.d("temp",temp);
+                                adb_GetJSONData.setMessage(result);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
