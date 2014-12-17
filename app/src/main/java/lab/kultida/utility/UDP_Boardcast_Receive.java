@@ -62,9 +62,6 @@ public class UDP_Boardcast_Receive extends AsyncTask<String, Void, String> {
 		        socket.close();
 	        }
         }
-	    if(socket != null){
-		    socket.close();
-	    }
         return "Fail!!";
 }
 
