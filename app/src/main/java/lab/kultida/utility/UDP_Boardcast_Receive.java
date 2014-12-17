@@ -50,6 +50,8 @@ public class UDP_Boardcast_Receive extends AsyncTask<String, Void, String> {
 			        Log.d("Receive", "socket closed");
 			        return msg;
 		        } else{
+			        socket.close();
+			        Log.d("Receive", "socket closed");
 			        return "Fail!!";
 		        }
 	        }
@@ -60,6 +62,9 @@ public class UDP_Boardcast_Receive extends AsyncTask<String, Void, String> {
 		        socket.close();
 	        }
         }
+	    if(socket != null){
+		    socket.close();
+	    }
         return "Fail!!";
 }
 

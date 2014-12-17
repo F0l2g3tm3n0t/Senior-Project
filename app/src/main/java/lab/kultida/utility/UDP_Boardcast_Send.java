@@ -12,7 +12,6 @@ import java.net.InetAddress;
 public class UDP_Boardcast_Send extends AsyncTask<String, Void, String> {
     protected InetAddress broadcastIP;
     protected int serverPort;
-    protected int clientPort;
     protected JSONObject condition;
     protected DatagramSocket socket;
 
@@ -34,7 +33,6 @@ public class UDP_Boardcast_Send extends AsyncTask<String, Void, String> {
 	        Log.d("condition", condition.toString());
 	        Log.d("--","------------------------------------------");
             serverPort = condition.getInt("serverPort");
-            clientPort = condition.getInt("clientPort");
             data_byte = condition.getJSONObject("data").toString().getBytes("UTF-8");
 
             socket = new DatagramSocket();
