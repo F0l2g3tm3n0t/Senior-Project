@@ -9,9 +9,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-/**
- * Created by ekapop on 15/12/2557.
- */
 public class UDP_Unicast_Send extends AsyncTask<String, Void, String> {
     protected InetAddress serverIP;
     protected JSONObject condition;

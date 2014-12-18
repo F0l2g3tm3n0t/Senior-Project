@@ -1,10 +1,9 @@
 package lab.kultida.seniorproject;
 
-/**
- * Created by ekapop on 14/12/2557.
- */
+
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
 
+import lab.kultida.utility.TCP_Unicast_Send;
 import lab.kultida.utility.UDP_Unicast_Send;
 
 public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototype {
@@ -32,6 +32,7 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
     protected int serverPort = 9998;
     protected int clientPort = 45808;
 	protected InetAddress clientIP;
+	//protected String serverIP;
 
 
     @Override
@@ -83,6 +84,7 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
                 JSONObject condition = new JSONObject();
                 try {
 	                clientIP = InetAddress.getByName(getIPAddress(true));
+	                //serverIP = "192.168.42.15";
                     condition.put("serverIP", serverIP);
                     condition.put("serverPort",serverPort);
                     condition.put("clientPort",clientPort);
@@ -92,11 +94,13 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
 	                data.put("clientIP", clientIP);
 	                data.put("clientPort", clientPort);
                     condition.put("data",data);
-                    textView_Output.setText(condition.toString());
+	                Log.d("Ask For Help", "data before call method = " + condition.toString());
+	                textView_Output.setText(condition.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                new UDP_Unicast_Send_AskForHelp().execute(condition.toString());
+                //new UDP_Unicast_Send_AskForHelp().execute(condition.toString());
+	            new TCP_Unicast_Send_AskForHelp().execute(condition.toString());
                 break;
         }
     }
@@ -121,6 +125,19 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
 	        }
         }
     }
+
+	protected class TCP_Unicast_Send_AskForHelp extends TCP_Unicast_Send {
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			//textView_Output.append("\n\n" + condition.toString());
+			textView_Output.append("\n" + result);
+		}
+	}
 }
 
 
