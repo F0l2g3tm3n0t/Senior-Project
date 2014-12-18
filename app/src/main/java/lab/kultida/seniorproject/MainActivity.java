@@ -3,6 +3,7 @@ package lab.kultida.seniorproject;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -56,7 +57,9 @@ public class MainActivity extends ActionBarActivity
     protected String lastTag = "";
     protected int selected = 0;
     protected Ringtone ringtone;
-	WifiApManager wifiApManager;
+    protected WifiApManager wifiApManager;
+    protected AudioManager audioManager;
+    protected int streamMaxVolume;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,8 +192,12 @@ public class MainActivity extends ActionBarActivity
     protected void setUpAlarm(){
         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+        audioManager = (AudioManager)getSystemService(this.AUDIO_SERVICE);
+        streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
     }
+
     protected void alarm() {
+        audioManager.setStreamVolume(AudioManager.STREAM_RING, streamMaxVolume, AudioManager.FLAG_ALLOW_RINGER_MODES|AudioManager.FLAG_PLAY_SOUND);
         if(ringtone != null){
             if(ringtone.isPlaying())ringtone.stop();
             else ringtone.play();
@@ -198,7 +205,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     protected void getJSONData(){
-        new JSON_Parser_MainActivity().execute("192.168.42.1","9090");
+        new JSON_Parser_MainActivity().execute("192.168.42.1", "9090");
     }
 
     protected void checkIPAndServerConnection(){
