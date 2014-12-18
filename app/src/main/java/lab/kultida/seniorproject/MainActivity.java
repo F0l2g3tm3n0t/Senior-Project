@@ -35,7 +35,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import lab.kultida.utility.ClientScanResult;
+import lab.kultida.utility.FinishScanListener;
 import lab.kultida.utility.JSON_Parser;
+import lab.kultida.utility.WifiApManager;
 
 
 public class MainActivity extends ActionBarActivity
@@ -53,6 +56,7 @@ public class MainActivity extends ActionBarActivity
     protected String lastTag = "";
     protected int selected = 0;
     protected Ringtone ringtone;
+	WifiApManager wifiApManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -277,7 +281,11 @@ public class MainActivity extends ActionBarActivity
 		for(int z = 0; z < temp.size(); z++){
 			Log.d("Wifi List" + z, temp.get(z).SSID.toString() + ", " + temp.get(z).level);
 		}
-        wifiManager.addNetwork(conf);
+
+	    wifiApManager = new WifiApManager(this);
+	    scan();
+
+	    wifiManager.addNetwork(conf);
 
         //enable Wifi
         while(!wifiManager.isWifiEnabled()){
@@ -315,7 +323,24 @@ public class MainActivity extends ActionBarActivity
     }
 
 
+	private void scan() {
+		wifiApManager.getClientList(false, new FinishScanListener() {
 
+			@Override
+			public void onFinishScan(final ArrayList<ClientScanResult> clients) {
+				Log.d("client list", "WifiApState: " + wifiApManager.getWifiApState() + "\n\n");
+				Log.d("client list", "Clients: \n");
+
+				for (ClientScanResult clientScanResult : clients) {
+					Log.d("client list", "####################\n");
+					Log.d("client list", "IpAddr: " + clientScanResult.getIpAddr() + "\n");
+					Log.d("client list", "Device: " + clientScanResult.getDevice() + "\n");
+					Log.d("client list", "HWAddr: " + clientScanResult.getHWAddr() + "\n");
+					Log.d("client list", "isReachable: " + clientScanResult.isReachable() + "\n");
+				}
+			}
+		});
+	}
 
 
 
@@ -417,5 +442,6 @@ public class MainActivity extends ActionBarActivity
             }
         }
     }
+
 
 }
