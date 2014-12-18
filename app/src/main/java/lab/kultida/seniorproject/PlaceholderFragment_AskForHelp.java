@@ -93,6 +93,7 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
                     data.put("signal",spinner_Signal.getSelectedItem().toString());
 	                data.put("clientIP", clientIP);
 	                data.put("clientPort", clientPort);
+	                data.put("macaddress", getMacAddress());
                     condition.put("data",data);
 	                Log.d("Ask For Help", "data before call method = " + condition.toString());
 	                textView_Output.setText(condition.toString());

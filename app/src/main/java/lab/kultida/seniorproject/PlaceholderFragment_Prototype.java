@@ -5,6 +5,9 @@ package lab.kultida.seniorproject;
  */
 
 import android.app.Activity;
+import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
@@ -14,11 +17,18 @@ public class PlaceholderFragment_Prototype extends Fragment implements View.OnCl
     protected View rootView;
     protected String serverIP = "1.1.1.99";
 
+	protected String getMacAddress(){
+		WifiManager manager = (WifiManager)(activity.getSystemService(Context.WIFI_SERVICE));
+		WifiInfo info = manager.getConnectionInfo();
+		String macAddress = info.getMacAddress();
+		return macAddress;
+	}
+
     protected void defaultOperation(){
         setRetainInstance(true);
         activity = getActivity();
     }
-    
+
     @Override
     public void onClick(View v) {
 
