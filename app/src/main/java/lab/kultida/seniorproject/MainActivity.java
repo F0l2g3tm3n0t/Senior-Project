@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -272,6 +273,10 @@ public class MainActivity extends ActionBarActivity
         //Add config to Wifi Manager
 
         WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
+	    List<ScanResult> temp = wifiManager.getScanResults();
+		for(int z = 0; z < temp.size(); z++){
+			Log.d("Wifi List" + z, temp.get(z).SSID.toString() + ", " + temp.get(z).level);
+		}
         wifiManager.addNetwork(conf);
 
         //enable Wifi
