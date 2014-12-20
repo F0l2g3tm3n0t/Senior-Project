@@ -1,6 +1,7 @@
 package lab.kultida.seniorproject;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -9,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -31,6 +33,7 @@ import org.json.JSONObject;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -39,6 +42,7 @@ import java.util.List;
 import lab.kultida.utility.ClientScanResult;
 import lab.kultida.utility.FinishScanListener;
 import lab.kultida.utility.JSON_Parser;
+import lab.kultida.utility.TCP_Unicast_Send;
 import lab.kultida.utility.WifiApManager;
 
 
@@ -66,9 +70,41 @@ public class MainActivity extends ActionBarActivity
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+	    //UpdateLocation
+	    updateLocate();
+
         defaultOperation();
         setUpAlarm();
     }
+
+	protected void updateLocate(){
+		JSONObject condition = new JSONObject();
+		try {
+			condition.put("serverIP", InetAddress.getAllByName("1.1.1.99"));
+			condition.put("serverPort", 9998);
+			JSONObject data = new JSONObject();
+			data.put("annotation", "");
+			data.put("signal", "");
+			data.put("clientIP", InetAddress.getByName(getIPAddress(true)));
+			data.put("clientPort", 55555);
+			data.put("macaddress", getMacAddress());
+			condition.put("data",data);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+
+		new TCP_Unicast_Send_UpdateLocation().execute(condition.toString());
+	}
+
+	protected String getMacAddress(){
+		WifiManager manager = (WifiManager)(getSystemService(Context.WIFI_SERVICE));
+		WifiInfo info = manager.getConnectionInfo();
+		String macAddress = info.getMacAddress();
+		return macAddress;
+	}
 
     protected void defaultOperation(){
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -260,7 +296,7 @@ public class MainActivity extends ActionBarActivity
     /*Connect To WIFI*/
     protected void connectToWifi(){
         setProgressBarIndeterminateVisibility(true);
-        String networkSSID = "My_AP_Pi2";
+        String networkSSID = "My_AP";
         String networkPass = "";
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + networkSSID + "\"";
@@ -301,7 +337,7 @@ public class MainActivity extends ActionBarActivity
 
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
         for( WifiConfiguration i : list ) {
-            if(i.SSID != null && i.SSID.equals("\"" + networkSSID + "\"")) {
+            if(i.SSID != null && i.SSID.contains("" + networkSSID + "")) {
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(i.networkId, true);
                 wifiManager.reconnect();
@@ -321,6 +357,7 @@ public class MainActivity extends ActionBarActivity
                 return;
             }
         }
+
         AlertDialog.Builder adb_ConnectWIFI = new AlertDialog.Builder(this);
         adb_ConnectWIFI.setTitle("Connect WIFI");
         adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " fail");
@@ -450,5 +487,20 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
+	protected class TCP_Unicast_Send_UpdateLocation extends TCP_Unicast_Send {
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+		}
 
+		@Override
+		protected void onPostExecute(String result) {
+			try {
+				wait(60000);
+				new TCP_Unicast_Send_UpdateLocation().execute();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
