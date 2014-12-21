@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -39,6 +41,7 @@ import java.util.List;
 
 import lab.kultida.utility.JSON_Parser;
 import lab.kultida.utility.TCP_Unicast_Send;
+import lab.kultida.utility.UDP_Broadcast_Receive;
 
 
 public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -51,6 +54,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected AudioManager audioManager;
     protected int streamMaxVolume;
     protected String serverIP = "1.1.1.99";
+    protected String serverPort_AlarmSignal = "21234";
     protected String serverPort_UpdateLocate = "9998";
     protected String PIIP = "192.168.42.1";
     protected String PIPort_JSON = "9090";
@@ -64,25 +68,27 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         defaultOperation();
         updateLocate();
         setUpAlarm();
+        receiveBroadcast_AlarmSignal();
+    }
+
+    protected void receiveBroadcast_AlarmSignal(){
+        JSONObject data = new JSONObject();
+        try {
+            data.put("serverPort",serverPort_AlarmSignal);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            new UDP_Broadcast_Receive_AlarmSignal().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
+        } else {
+            new UDP_Broadcast_Receive_AlarmSignal().execute(data.toString());
+        }
     }
 
 	protected void updateLocate(){
         JSONObject data = new JSONObject();
 		JSONObject data_frame = new JSONObject();
-
         try {
-            /* JSON Format
-                data_frame
-                    serverIP
-                    serverPort
-                    data
-                        annotation
-                        signal
-                        clientIP
-                        macaddress
-                        fromPI
-             */
-
             data.put("annotation", "");
 			data.put("signal", "updateLocate");
 			data.put("clientIP", InetAddress.getByName(getIPAddress(true)));
@@ -120,17 +126,17 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
     }
 
-    protected void alarm() {
+    protected void alarmPlay(){
         audioManager.setStreamVolume(AudioManager.STREAM_RING, streamMaxVolume, AudioManager.FLAG_ALLOW_RINGER_MODES|AudioManager.FLAG_PLAY_SOUND);
         if(ringtone != null){
-            if(ringtone.isPlaying()) {
-                Log.d("MainActivity - alarm","alarm stop");
-                ringtone.stop();
-            }
-            else {
-                Log.d("MainActivity - alarm","alarm play");
-                ringtone.play();
-            }
+            ringtone.play();
+        }
+    }
+
+    protected void alarmStop(){
+        audioManager.setStreamVolume(AudioManager.STREAM_RING, streamMaxVolume, AudioManager.FLAG_ALLOW_RINGER_MODES|AudioManager.FLAG_PLAY_SOUND);
+        if(ringtone != null){
+            ringtone.stop();
         }
     }
 
@@ -402,7 +408,11 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 getJSONData();
                 break;
             case R.id.action_testAlarm:
-                alarm();
+                if(ringtone.isPlaying()) {
+                    alarmStop();
+                }else{
+                    alarmPlay();
+                }
                 break;
         }
 
@@ -545,6 +555,38 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             });
             adb_CheckIp.show();
             setSupportProgressBarIndeterminateVisibility(false);
+        }
+    }
+
+    protected class UDP_Broadcast_Receive_AlarmSignal extends UDP_Broadcast_Receive {
+
+        @Override
+        protected void onPreExecute() {
+            log_Head = "UDP_Broadcast_Receive_AlarmSignal";
+            myAddress = getIPAddress(true);
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if(!result.contains("Fail")){
+                try {
+                    JSONObject data = new JSONObject(result);
+                    if(data.getString("alarm").matches("alarm signal")){
+                        if(!ringtone.isPlaying()){
+                            AlertDialog.Builder adb_Alarm = new AlertDialog.Builder(MainActivity.this);
+                            adb_Alarm.setTitle("Rescue Team are here");
+                            adb_Alarm.setMessage("Rescue Team are here \nWe are searching you so do not turn off alarm");
+                            adb_Alarm.setPositiveButton("OK", null);
+                            adb_Alarm.show();
+                        }
+                        alarmPlay();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            receiveBroadcast_AlarmSignal();
         }
     }
 }

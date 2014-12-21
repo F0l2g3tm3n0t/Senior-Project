@@ -39,7 +39,6 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
             Log.d(log_Head + " - doInBackground","serverPort : " + serverPort);
             Log.d(log_Head + " - doInBackground","send data : " + data);
 
-
             // open socket
             Log.d(log_Head + " - doInBackground","open socket");
 			socket = new Socket(serverIP,serverPort);

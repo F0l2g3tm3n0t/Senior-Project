@@ -71,13 +71,11 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
                     data.put("annotation", editText_Annotation.getText());
                     data.put("signal", spinner_Signal.getSelectedItem().toString());
                     data.put("clientIP", InetAddress.getByName(activity.getIPAddress(true)));
-                    data.put("clientPort", clientPort);
                     data.put("macaddress", getMacAddress());
                     data.put("fromPi", activity.getPIAddress());
 
                     data_frame.put("serverIP", serverIP);
                     data_frame.put("serverPort", serverPort);
-                    data_frame.put("clientPort", clientPort);
                     data_frame.put("data", data);
                 } catch (Exception e) {
                     e.printStackTrace();

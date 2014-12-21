@@ -47,12 +47,12 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         welcomeUser();
         createChat();
         createTime();
-        receiveBroadcast();
+        receiveBroadcast_Chatroom();
 
         return rootView;
     }
 
-    protected void receiveBroadcast(){
+    protected void receiveBroadcast_Chatroom(){
         JSONObject data = new JSONObject();
         try {
             data.put("serverPort",serverPort);
@@ -198,7 +198,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 	        }
 
 	        //Start Server Again
-            receiveBroadcast();
+            receiveBroadcast_Chatroom();
         }
     }
 }
