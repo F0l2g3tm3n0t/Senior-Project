@@ -228,6 +228,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
         if(wifiManager.isWifiEnabled()) {
             WifiInfo info = wifiManager.getConnectionInfo ();
+            Log.d("networkName",info.getSSID());
             return info.getSSID();
         }
         return "error";
