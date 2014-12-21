@@ -93,7 +93,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 			data.put("signal", "updateLocate");
 			data.put("clientIP", InetAddress.getByName(getIPAddress(true)));
 			data.put("macaddress", getMacAddress());
-            data.put("fromPi", getPIAddress());
+            data.put("fromPi", getNetworkName());
 
             data_frame.put("serverIP", serverIP);
             data_frame.put("serverPort", serverPort_UpdateLocate);
@@ -162,7 +162,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             data.put("signal", "checkServerConnection");
             data.put("clientIP", InetAddress.getByName(getIPAddress(true)));
             data.put("macaddress", getMacAddress());
-            data.put("fromPi", getPIAddress());
+            data.put("fromPi", getNetworkName());
 
             data_frame.put("serverIP", serverIP);
             data_frame.put("serverPort", serverPort_UpdateLocate);
@@ -171,7 +171,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             e.printStackTrace();
         }
 
-        Log.d("MainActivity - checkIPAndServerConnection()","TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
+        Log.d("MainActivity - checkIPAndServerConnection()", "TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
         new TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString());
 
     }
@@ -205,7 +205,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         return "error";
     }
 
-    protected String getPIAddress(){
+    protected String getNetworkAddress(){
         WifiManager manager = (WifiManager)(getSystemService(Context.WIFI_SERVICE));
         WifiInfo wifiInfo = manager.getConnectionInfo();
         try {
@@ -222,6 +222,15 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             e.printStackTrace();
             return "Fail";
         }
+    }
+
+    protected String getNetworkName(){
+        WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
+        if(wifiManager.isWifiEnabled()) {
+            WifiInfo info = wifiManager.getConnectionInfo ();
+            return info.getSSID();
+        }
+        return "error";
     }
 
     protected String getMacAddress(){

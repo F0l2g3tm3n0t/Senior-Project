@@ -72,7 +72,7 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
                     data.put("signal", spinner_Signal.getSelectedItem().toString());
                     data.put("clientIP", InetAddress.getByName(activity.getIPAddress(true)));
                     data.put("macaddress", getMacAddress());
-                    data.put("fromPi", activity.getPIAddress());
+                    data.put("fromPi", activity.getNetworkName());
 
                     data_frame.put("serverIP", serverIP);
                     data_frame.put("serverPort", serverPort);
