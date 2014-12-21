@@ -57,8 +57,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_main);
 
         defaultOperation();
@@ -116,7 +116,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected void setUpAlarm(){
         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
-        audioManager = (AudioManager)getSystemService(this.AUDIO_SERVICE);
+        audioManager = (AudioManager)getSystemService(AUDIO_SERVICE);
         streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
     }
 
@@ -138,26 +138,36 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         new JSON_Parser_MainActivity().execute(PIIP, PIPort_JSON);
     }
 
-    protected void checkIPAndServerConnection(){
-        setProgressBarIndeterminateVisibility(true);
-        AlertDialog.Builder adb_CheckIp = new AlertDialog.Builder(this);
+    protected void checkIP(){
+        AlertDialog.Builder adb_CheckIp = new AlertDialog.Builder(MainActivity.this);
         adb_CheckIp.setTitle("Check IP Address");
-        adb_CheckIp.setMessage("IP Address : " + getIPAddress(true) + "\nServer Connection : " + checkServerConnection());
+        adb_CheckIp.setMessage("IP Address : " + getIPAddress(true));
         adb_CheckIp.setPositiveButton("OK", null);
-        adb_CheckIp.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                setProgressBarIndeterminateVisibility(false);
-                checkIPAndServerConnection();
-            }
-        });
         adb_CheckIp.show();
-        setProgressBarIndeterminateVisibility(false);
     }
 
-    protected String checkServerConnection(){
-        //TODO
-        return "connected";
+    protected void checkServerConnection(){
+        setSupportProgressBarIndeterminateVisibility(true);
+        JSONObject data = new JSONObject();
+        JSONObject data_frame = new JSONObject();
+
+        try {
+            data.put("annotation", "");
+            data.put("signal", "checkServerConnection");
+            data.put("clientIP", InetAddress.getByName(getIPAddress(true)));
+            data.put("macaddress", getMacAddress());
+            data.put("fromPi", getPIAddress());
+
+            data_frame.put("serverIP", serverIP);
+            data_frame.put("serverPort", serverPort_UpdateLocate);
+            data_frame.put("data", data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Log.d("MainActivity - checkIPAndServerConnection()","TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
+        new TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString());
+
     }
 
     public String getIPAddress(boolean useIPv4) {
@@ -217,9 +227,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     /*Connect To WIFI*/
     //TODO What r u doing
     protected void connectToWifi(){
-        setProgressBarIndeterminateVisibility(true);
+        setSupportProgressBarIndeterminateVisibility(true);
         String networkSSID = "My_AP";
-        String networkPass = "";
+//        String networkPass = "";
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + networkSSID + "\"";
 
@@ -269,7 +279,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(i.networkId, true);
                 wifiManager.reconnect();
-                while(!wifiManager.getConnectionInfo().getSSID().contains(networkSSID)){}
+                while(true){
+                    if (wifiManager.getConnectionInfo().getSSID().contains(networkSSID)) break;
+                }
                 AlertDialog.Builder adb_ConnectWIFI = new AlertDialog.Builder(this);
                 adb_ConnectWIFI.setTitle("Connect WIFI");
                 adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " complete" + "\nThis device will connect to Rescue's WIFI in few second");
@@ -281,7 +293,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                     }
                 });
                 adb_ConnectWIFI.show();
-                setProgressBarIndeterminateVisibility(false);
+                setSupportProgressBarIndeterminateVisibility(false);
                 return;
             }
         }
@@ -291,7 +303,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " fail");
         adb_ConnectWIFI.setPositiveButton("Ok", null);
         adb_ConnectWIFI.show();
-        setProgressBarIndeterminateVisibility(false);
+        setSupportProgressBarIndeterminateVisibility(false);
     }
 
     public void restoreActionBar() {
@@ -378,7 +390,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         //noinspection SimplifiableIfStatement
         switch (item.getItemId()) {
             case R.id.checkIp :
-                checkIPAndServerConnection();
+                checkIP();
+                break;
+            case R.id.checkServerConnection :
+                checkServerConnection();
                 break;
             case R.id.connectWifi :
                 connectToWifi();
@@ -444,8 +459,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                                 String temp = finalData.get(data_list[selected]).toString();
                                 String[] temp_Split = temp.split(",");
                                 String result = "";
-                                for(int i = 0;i < temp_Split.length;i++){
-                                    result = result + "\n" + temp_Split[i];
+                                for (String aTemp_Split : temp_Split) {
+                                    result = result + "\n" + aTemp_Split;
                                 }
                                 adb_GetJSONData.setMessage(result);
                             } catch (JSONException e) {
@@ -492,18 +507,44 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         }
 
         protected void sleep(){
-//            try {
-//                Log.d(log_Head + " - onPostExecute","Thread sleep");
-//                Thread.sleep(60000); // wait for 1 minute
-//                Log.d(log_Head + " - onPostExecute","Thread wake up");
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+    //            try {
+    //                Log.d(log_Head + " - onPostExecute","Thread sleep");
+    //                Thread.sleep(60000); // wait for 1 minute
+    //                Log.d(log_Head + " - onPostExecute","Thread wake up");
+    //            } catch (InterruptedException e) {
+    //                e.printStackTrace();
+    //            }
         }
 
         @Override
-		protected void onPostExecute(String result) {
-//            updateLocate();
-		}
-	}
+        protected void onPostExecute(String result) {
+    //            updateLocate();
+        }
+    }
+
+    protected class TCP_Unicast_Send_CheckServerConnection extends TCP_Unicast_Send {
+
+        @Override
+        protected void onPreExecute() {
+            log_Head = "TCP_Unicast_Send_CheckServerConnection";
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            AlertDialog.Builder adb_CheckIp = new AlertDialog.Builder(MainActivity.this);
+            adb_CheckIp.setTitle("Check Server Connection");
+            adb_CheckIp.setMessage("Server Connection : " + result);
+            adb_CheckIp.setPositiveButton("OK", null);
+            adb_CheckIp.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    setSupportProgressBarIndeterminateVisibility(false);
+                    checkServerConnection();
+                }
+            });
+            adb_CheckIp.show();
+            setSupportProgressBarIndeterminateVisibility(false);
+        }
+    }
 }

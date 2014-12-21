@@ -10,21 +10,27 @@
         android:showAsAction="withText|ifRoom" />
 
     <item
+        android:id="@+id/checkServerConnection"
+        android:title="Check Server Connection"
+        android:orderInCategory="2"
+        android:showAsAction="withText|ifRoom" />
+
+    <item
         android:id="@+id/connectWifi"
         android:title="Connect Wifi"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         android:showAsAction="withText|ifRoom" />
 
     <item
         android:id="@+id/action_getJSONData"
         android:title="Get JSON Data"
-        android:orderInCategory="3"
+        android:orderInCategory="4"
         android:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_testAlarm"
         android:title="Test Alarm"
-        android:orderInCategory="4"
+        android:orderInCategory="5"
         android:showAsAction="ifRoom" />
 
 </menu>
