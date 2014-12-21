@@ -90,10 +90,11 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
                     condition.put("clientPort",clientPort);
                     JSONObject data = new JSONObject();
                     data.put("annotation", editText_Annotation.getText());
-                    data.put("signal",spinner_Signal.getSelectedItem().toString());
+                    data.put("signal", spinner_Signal.getSelectedItem().toString());
 	                data.put("clientIP", clientIP);
 	                data.put("clientPort", clientPort);
 	                data.put("macaddress", getMacAddress());
+	                data.put("fromPi", getPIAddress());
                     condition.put("data",data);
 	                Log.d("Ask For Help", "data before call method = " + condition.toString());
 	                textView_Output.setText(condition.toString());
