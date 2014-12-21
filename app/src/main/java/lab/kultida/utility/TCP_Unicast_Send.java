@@ -6,57 +6,62 @@ import android.util.Log;
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
 public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
 
-	protected JSONObject condition;
-	protected InetAddress serverIP;
-	protected int serverPort;
-	protected String data_byte;
-	protected Socket socket = null;
-	protected DataOutputStream output = null;
-	protected String result = "";
+    protected String log_Head = "";
 
 	@Override
 	protected void onPreExecute() {
+        // log_Head
 		super.onPreExecute();
 	}
 
+    protected void sleep(){
+
+    }
+
 	@Override
 	protected String doInBackground(String... arg0) {
-		Log.d("Ask For help", "Reach Do in background");
+        Socket socket = null;
+        DataOutputStream output = null;
 		try{
-			/*
-				-------------------
-				 Initial condition
-				-------------------
-			 */
-			Log.d("Ask For Help", "start init condition");
-			condition = new JSONObject(arg0[0]);
-			this.serverIP = InetAddress.getByName(condition.getString("serverIP"));
-			this.serverPort = Integer.parseInt(condition.getString("serverPort"));
-			this.data_byte = condition.getJSONObject("data").toString();
-			Log.d("TCP_Unicast_Send", "initial condition: " + condition.toString());
+			// Initial condition
+            JSONObject data_frame = new JSONObject(arg0[0]);
+            Log.d(log_Head + " - doInBackground","data_frame : " + data_frame);
+            InetAddress serverIP = InetAddress.getByName(data_frame.getString("serverIP"));
+			int serverPort = Integer.parseInt(data_frame.getString("serverPort"));
+            String data = data_frame.getJSONObject("data").toString();
+            Log.d(log_Head + " - doInBackground","serverIP : " + data_frame.getString("serverIP"));
+            Log.d(log_Head + " - doInBackground","serverPort : " + serverPort);
+            Log.d(log_Head + " - doInBackground","send data : " + data);
 
-			/*
-				-------------
-				 open socket
-				-------------
-			 */
+
+            // open socket
+            Log.d(log_Head + " - doInBackground","open socket");
 			socket = new Socket(serverIP,serverPort);
 			output = new DataOutputStream(socket.getOutputStream());
-			output.writeUTF(data_byte);
-			Log.d("TCP_Unicast_Send", "data : " + data_byte);
+			output.writeUTF(data);
+			Log.d(log_Head + " - doInBackground", "receive data : " + data);
 			output.flush();
 			output.close();
 			socket.close();
-			return "Success";
+            sleep();
+			return "Success : " + data;
 		}catch (Exception e){
-			Log.d("TCP_Unicast_Send", "Error" + e);
+			e.printStackTrace();
+            try {
+                if(output != null) output.close();
+                if(socket != null) socket.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            sleep();
+            return "Fail";
 		}
-		return "Fail";
 	}
 
 	@Override

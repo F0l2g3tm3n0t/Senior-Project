@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import lab.kultida.utility.UDP_Boardcast_Receive;
-import lab.kultida.utility.UDP_Boardcast_Send;
+import lab.kultida.utility.UDP_Broadcast_Receive;
+import lab.kultida.utility.UDP_Broadcast_Send;
 
 public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype {
     protected ListView listView_Chatroom;
@@ -44,28 +43,30 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         rootView = inflater.inflate(R.layout.fragment_chat_room, container, false);
 
         defaultOperation();
-        welcomUser();
         getComponent();
+        welcomeUser();
         createChat();
         createTime();
+        receiveBroadcast();
+
+        return rootView;
+    }
+
+    protected void receiveBroadcast(){
         JSONObject data = new JSONObject();
         try {
             data.put("serverPort",serverPort);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-	    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB) {
-		    Log.d("Receive", "executor");
-		    new UDP_Boardcast_Receive_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
-	    } else {
-		    Log.d("Receive","execute");
-		    new UDP_Boardcast_Receive_ChatRoom().execute(data.toString());
-	    }
-
-        return rootView;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            new UDP_Broadcast_Receive_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
+        } else {
+            new UDP_Broadcast_Receive_ChatRoom().execute(data.toString());
+        }
     }
 
-    protected void welcomUser(){
+    protected void welcomeUser(){
         final EditText input = new EditText(activity);
         AlertDialog.Builder adb_getUser = new AlertDialog.Builder(activity);
         adb_getUser.setTitle("Create User");
@@ -110,73 +111,82 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_ChatRoom:
-	            Log.d("Button Click", "o.");
-	            JSONObject data_frame = new JSONObject();
-	            JSONObject data = new JSONObject();
+                /* JSON Format
+                    data_frame
+                        fromMe
+                        clientPort
+                        serverPort
+                        data
+                            user
+                            message
+                            time
+                            date
+                */
+
+                JSONObject data = new JSONObject();
+                JSONObject data_frame = new JSONObject();
 	            try {
 		            data.put("user",myUser);
 		            data.put("message",editText_ChatRoom.getText().toString());
 		            data.put("time",time.format(calendar.getTime()));
 		            data.put("date",date.format(calendar.getTime()));
+
 		            data_frame.put("fromMe", true);
+                    data_frame.put("clientPort", clientPort);
+                    data_frame.put("serverPort", serverPort);
 		            data_frame.put("data", data);
 	            } catch (JSONException e) {
 		            e.printStackTrace();
 	            }
 	            addChatMessage(data_frame);
-	            Log.d("sendMessage", data_frame.toString());
                 break;
         }
     }
 
-    public void addChatMessage(JSONObject data){
-        try {
-            data.put("clientPort",clientPort);
-	        data.put("serverPort",serverPort);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-	    Log.d("sending broadcast", data.toString());
-	    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB)
-		    new UDP_Boardcast_Send_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
+    public void addChatMessage(JSONObject data_frame){
+	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+		    new UDP_Broadcast_Send_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
 	    else
-		    new UDP_Boardcast_Send_ChatRoom().execute(data.toString());
-	    Log.d("sending broadcast", "Finished");
-        adapter.addChatMessage(data);
+		    new UDP_Broadcast_Send_ChatRoom().execute(data_frame.toString());
+
+        adapter.addChatMessage(data_frame);
         adapter.notifyDataSetChanged();
         listView_Chatroom.setSelection(adapter.getCount() - 1);
     }
 
-//  <<--------------------------  ASYNTASK OPERATION  ------------------------->>
-    protected class UDP_Boardcast_Send_ChatRoom extends UDP_Boardcast_Send {
-        @Override
+//  <<--------------------------  ASYNCTASK OPERATION  ------------------------->>
+    protected class UDP_Broadcast_Send_ChatRoom extends UDP_Broadcast_Send {
+
+    @Override
         protected void onPreExecute() {
-	        Log.d("init", "Start sending broadcast");
+            log_Head = "UDP_Broadcast_Send_ChatRoom";
             super.onPreExecute();
         }
 
         @Override
         protected void onPostExecute(String result) {
-			Log.d("sending broadcast", "finished");
+
         }
     }
 
 
 
-    protected class UDP_Boardcast_Receive_ChatRoom extends UDP_Boardcast_Receive {
+    protected class UDP_Broadcast_Receive_ChatRoom extends UDP_Broadcast_Receive {
+
         @Override
         protected void onPreExecute() {
+            log_Head = "UDP_Broadcast_Receive_ChatRoom";
+            myAddress = activity.getIPAddress(true);
             super.onPreExecute();
         }
 
         @Override
         protected void onPostExecute(String result) {
-	        JSONObject data_frame = new JSONObject();
 	        if(!result.contains("Fail")){
-				Log.d("Receive", "Show si wa!!");
+                JSONObject data_frame = null;
 		        try {
 			        JSONObject data = new JSONObject(result);
+                    data_frame = new JSONObject();
 			        data_frame.put("data",data);
 			        data_frame.put("fromMe",false);
 		        } catch (JSONException e) {
@@ -185,27 +195,10 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 			    adapter.addChatMessage(data_frame);
 		        adapter.notifyDataSetChanged();
 	            listView_Chatroom.setSelection(adapter.getCount() - 1);
-		        Log.d("Receive", "Show leaw woii!!");
 	        }
 
-	        /*
-	            ------------------
-	            Start Server Again
-	            ------------------
-	         */
-	        JSONObject newData = new JSONObject();
-	        try {
-		        newData.put("serverPort",serverPort);
-	        } catch (JSONException e) {
-		        e.printStackTrace();
-	        }
-	        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB) {
-		        Log.d("Receive", "executor");
-		        new UDP_Boardcast_Receive_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, newData.toString());
-	        } else {
-		        Log.d("Receive","execute");
-		        new UDP_Boardcast_Receive_ChatRoom().execute(newData.toString());
-	        }
+	        //Start Server Again
+            receiveBroadcast();
         }
     }
 }

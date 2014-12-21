@@ -10,57 +10,40 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class UDP_Unicast_Send extends AsyncTask<String, Void, String> {
-    protected InetAddress serverIP;
-    protected JSONObject condition;
-    protected DatagramSocket socket;
-    protected int serverPort = 9998;
-    protected int clientPort = 45808;
-	protected String result = "Fail!!";
+
+	protected String log_Head;
 
     @Override
     protected void onPreExecute() {
+        // log_Head
         super.onPreExecute();
     }
 
     @Override
     protected String doInBackground(String... arg0) {
+        DatagramSocket socket = null;
         byte[] data_byte;
-
         try {
-            condition = new JSONObject(arg0[0]);
-            this.serverIP = InetAddress.getByName(condition.getString("serverIP"));
-            this.serverPort = Integer.parseInt(condition.getString("serverPort"));
-	        this.clientPort = Integer.parseInt(condition.getString("clientPort"));
-            data_byte = condition.getJSONObject("data").toString().getBytes("UTF-8");
-            socket = new DatagramSocket(clientPort);
+            // Initial condition
+            JSONObject data_frame = new JSONObject(arg0[0]);
+            Log.d(log_Head + " - doInBackground", "data_frame : " + data_frame);
+            InetAddress serverIP = InetAddress.getByName(data_frame.getString("serverIP"));
+            int serverPort = Integer.parseInt(data_frame.getString("serverPort"));
+            data_byte = data_frame.getJSONObject("data").toString().getBytes("UTF-8");
+
+            // open socket
+            socket = new DatagramSocket();
             DatagramPacket sendPacket = new DatagramPacket(data_byte,data_byte.length,serverIP,serverPort);
             socket.send(sendPacket);
-	        Log.d("Ask", data_byte.toString());
-	        //result = receiveMessage();
+            socket.close();
+            return "Success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            if(socket != null) socket.close();
+            return "Fail";
+        }
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-    public String receiveMessage(){
-        byte[] buffer = new byte[3000];
-        try {
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-	        Log.d("Ask", "before receive");
-            socket.receive(packet);
-	        Log.d("Ask", "send already");
-	        String temp = new String(packet.getData(), 0, packet.getLength()) + ", from address: " + packet.getAddress().toString().substring(1) + ", port: " + packet.getPort();
-	        Log.d("Ask", "socket closed");
-	        socket.close();
-	        return temp;
-        } catch (Exception e) {
-            e.printStackTrace();
-	        Log.d("Ask", "socket closed by error");
-	        socket.close();
-        }
-        return "Fail!!";
-    }
     @Override
     protected void onPostExecute(String result) {
 

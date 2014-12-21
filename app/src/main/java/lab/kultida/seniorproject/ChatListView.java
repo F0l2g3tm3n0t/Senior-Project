@@ -1,6 +1,7 @@
 package lab.kultida.seniorproject;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class ChatListView extends ArrayAdapter<String>{
+
     private final Activity context;
     protected ArrayList<String> user;
     protected ArrayList<String> message;
@@ -33,13 +35,24 @@ public class ChatListView extends ArrayAdapter<String>{
 
     public void addChatMessage(JSONObject data_frame){
         try {
+            /* JSON Format
+                data_frame
+                    fromMe
+                    data
+                        user
+                        message
+                        time
+                        date
+            */
 
-	        JSONObject data = data_frame.getJSONObject("data");
+            fromMe.add(data_frame.getBoolean("fromMe"));
+
+            JSONObject data = data_frame.getJSONObject("data");
             user.add(data.getString("user"));
             message.add(data.getString("message"));
             time.add(data.getString("time"));
             date.add(data.getString("date"));
-            fromMe.add(data_frame.getBoolean("fromMe"));
+            Log.d("ChatListView - addChatMessage","data_frame = " + data_frame.toString());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -52,10 +65,6 @@ public class ChatListView extends ArrayAdapter<String>{
         TextView textView_User = (TextView) rowView.findViewById(R.id.textView_User);
         TextView textView_Message = (TextView) rowView.findViewById(R.id.textView_Message);
         TextView textView_Date = (TextView)rowView.findViewById(R.id.textView_Date);
-
-//        Log.d("user getView " + position + " :",user.toString());
-//        Log.d("message getView " + position + " :",message.toString());
-//        Log.d("time getView " + position + " :",time.toString());
 
         textView_User.setText(user.get(position) + " : " + time.get(position));
         textView_Message.setText(message.get(position));
