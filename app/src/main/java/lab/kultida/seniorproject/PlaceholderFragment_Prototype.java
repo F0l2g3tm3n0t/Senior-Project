@@ -10,11 +10,14 @@ import android.net.wifi.WifiManager;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import lab.kultida.utility.DataBase;
+
 public class PlaceholderFragment_Prototype extends Fragment implements View.OnClickListener{
     protected MainActivity activity;
     protected boolean debugging_mode = true;
     protected View rootView;
     protected String serverIP;
+    protected DataBase database;
 
 	protected String getMacAddress(){
 		WifiManager manager = (WifiManager)(activity.getSystemService(Context.WIFI_SERVICE));
@@ -27,6 +30,7 @@ public class PlaceholderFragment_Prototype extends Fragment implements View.OnCl
         setRetainInstance(true);
         activity = (MainActivity)getActivity();
         serverIP = activity.serverIP;
+        database = activity.database;
     }
 
     @Override

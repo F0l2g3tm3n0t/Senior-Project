@@ -20,7 +20,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,6 +39,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import lab.kultida.utility.DataBase;
 import lab.kultida.utility.JSON_Parser;
 import lab.kultida.utility.TCP_Unicast_Send;
 import lab.kultida.utility.UDP_Broadcast_Receive;
@@ -59,6 +59,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected String serverPort_UpdateLocate = "9998";
     protected String PIIP = "192.168.42.1";
     protected String PIPort_JSON = "9090";
+    public DataBase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +69,17 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
         defaultOperation();
         updateLocate();
+        createDatabase();
         setUpAlarm();
         receiveBroadcast_AlarmSignal();
-        Log.d("Phone number",getPhoneNumber());
+//        Log.d("Phone number",getPhoneNumber());
+    }
+
+    protected void createDatabase(){
+        database = new DataBase(this); //start class DB
+        database.getWritableDatabase(); // start create database and table
+
+
     }
 
     protected void receiveBroadcast_AlarmSignal(){
@@ -243,10 +252,11 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     }
 
     protected String getPhoneNumber(){
-        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        String phoneNumber = tm.getLine1Number();
-        Log.d("phoneNumber2",phoneNumber);
-        return phoneNumber;
+//        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+//        String phoneNumber = tm.getLine1Number();
+//        Log.d("phoneNumber2",phoneNumber);
+//        return phoneNumber;
+        return "phone number";
     }
 
     /*Connect To WIFI*/
