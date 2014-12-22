@@ -71,6 +71,11 @@ public class TCP_Unicast_Auto_Send extends AsyncTask<String, Void, String> {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+			try {
+				Thread.sleep(30000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 			return "Fail";
 		}
 	}
