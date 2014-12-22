@@ -79,6 +79,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         setUpAlarm();
         receiveBroadcast_AlarmSignal();
         welcomeUser();
+        fragment_chatRoom.activity = this;
+        fragment_chatRoom.database = database;
+        fragment_chatRoom.receiveBroadcast_Chatroom();
 
 //        Log.d("Phone number",getPhoneNumber());
     }

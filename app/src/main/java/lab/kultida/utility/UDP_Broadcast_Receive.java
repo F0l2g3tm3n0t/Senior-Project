@@ -49,7 +49,7 @@ public class UDP_Broadcast_Receive extends AsyncTask<String, Void, String> {
 		        socket.receive(packet);
                 socket.close();
                 msg = new String(buf, 0, packet.getLength());
-		        address = packet.getAddress();
+                address = packet.getAddress();
                 Log.d(log_Head + " - doInBackground","packet address : " + address.getHostAddress());
                 Log.d(log_Head + " - doInBackground","my address : " + myAddress);
                 Log.d(log_Head + " - doInBackground","message : " + msg);
