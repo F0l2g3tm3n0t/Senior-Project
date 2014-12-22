@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import org.apache.http.conn.util.InetAddressUtils;
@@ -60,11 +61,16 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected String PIIP = "192.168.42.1";
     protected String PIPort_JSON = "9090";
     public DataBase database;
+    protected PlaceholderFragment_Home fragment_home;
+    protected PlaceholderFragment_AskForHelp fragment_ask_for_help;
+    protected PlaceholderFragment_ChatRoom fragment_chatRoom;
+    protected String myUser = "Anonymous";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        createFragment();
         setContentView(R.layout.activity_main);
 
         defaultOperation();
@@ -72,7 +78,32 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         createDatabase();
         setUpAlarm();
         receiveBroadcast_AlarmSignal();
+        welcomeUser();
+
 //        Log.d("Phone number",getPhoneNumber());
+    }
+
+    protected void createFragment(){
+        this.fragment_home = new PlaceholderFragment_Home();
+        this.fragment_ask_for_help = new PlaceholderFragment_AskForHelp();
+        this.fragment_chatRoom = new PlaceholderFragment_ChatRoom();
+    }
+
+    protected void welcomeUser(){
+        final EditText input = new EditText(this);
+        AlertDialog.Builder adb_getUser = new AlertDialog.Builder(this);
+        adb_getUser.setTitle("Create User");
+        adb_getUser.setMessage("Please Enter Your Name");
+        adb_getUser.setView(input);
+        adb_getUser.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(!input.getText().toString().matches("")) myUser = input.getText().toString();
+                Toast.makeText(MainActivity.this,"Welcome " + myUser,Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        adb_getUser.show();
     }
 
     protected void createDatabase(){
@@ -369,7 +400,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 if(temp != null){
                     transaction.show(temp);
                 }else{
-                    transaction.add(R.id.container, new PlaceholderFragment_Home(), lastTag);
+                    transaction.add(R.id.container, fragment_home, lastTag);
                     transaction.addToBackStack(null);
                 }
                 transaction.commit();
@@ -382,7 +413,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 if(temp != null){
                     transaction.show(temp);
                 }else{
-                    transaction.add(R.id.container, new PlaceholderFragment_AskForHelp(), lastTag);
+                    transaction.add(R.id.container, fragment_ask_for_help, lastTag);
                     transaction.addToBackStack(null);
                 }
                 transaction.commit();
@@ -395,7 +426,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 if(temp != null){
                     transaction.show(temp);
                 }else{
-                    transaction.add(R.id.container, new PlaceholderFragment_ChatRoom(), lastTag);
+                    transaction.add(R.id.container, fragment_chatRoom, lastTag);
                     transaction.addToBackStack(null);
                 }
                 transaction.commit();
@@ -433,15 +464,24 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             case R.id.connectWifi :
                 connectToWifi();
                 break;
-            case R.id.action_getJSONData:
+            case R.id.action_getJSONData :
                 getJSONData();
                 break;
-            case R.id.action_testAlarm:
+            case R.id.action_testAlarm :
                 if(ringtone.isPlaying()) {
                     alarmStop();
                 }else{
                     alarmPlay();
                 }
+                break;
+            case R.id.action_clearChat :
+                if(mTitle.toString().matches("Chat Room")) {
+                    Toast.makeText(this,"Clear Chat",Toast.LENGTH_SHORT).show();
+                    database.delelteAllData(database.getTABLE_ChatRoom());
+                    fragment_chatRoom.adapter.clear();
+                    fragment_chatRoom.adapter.notifyDataSetChanged();
+                }
+                else Toast.makeText(this,"Please switch page to chat room before use this operation",Toast.LENGTH_SHORT).show();
                 break;
         }
 

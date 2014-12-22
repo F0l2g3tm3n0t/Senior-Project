@@ -105,8 +105,8 @@ public class DataBase extends SQLiteOpenHelper{
             for(int i = 0;i < OrderBy.length;i++){
                 if(i != 0){
                     order = order + ", ";
-                    order = order + OrderBy[i];
                 }
+                order = order + OrderBy[i];
             }
 
             String strSQL = "SELECT  * FROM " + TABLE_ChatRoom + " ORDER BY " + order;

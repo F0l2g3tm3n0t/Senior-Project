@@ -60,6 +60,7 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
             sleep();
             return "Success : " + data;
         }catch (Exception e){
+            Log.d("Exception",log_Head);
             e.printStackTrace();
             try {
                 if(output != null) output.close();

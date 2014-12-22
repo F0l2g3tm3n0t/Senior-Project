@@ -38,6 +38,7 @@ public class UDP_Unicast_Send extends AsyncTask<String, Void, String> {
             socket.close();
             return "Success";
         } catch (Exception e) {
+            Log.d("Exception",log_Head);
             e.printStackTrace();
             if(socket != null) socket.close();
             return "Fail";

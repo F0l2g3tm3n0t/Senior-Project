@@ -33,4 +33,10 @@
         android:orderInCategory="5"
         android:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_clearChat"
+        android:title="Clear Chat"
+        android:orderInCategory="6"
+        android:showAsAction="ifRoom" />
+
 </menu>

@@ -63,6 +63,7 @@ public class UDP_Broadcast_Receive extends AsyncTask<String, Void, String> {
                 }
 	        }
         }catch (Exception e){
+            Log.d("Exception",log_Head);
             e.printStackTrace();
 	        if(socket != null) socket.close();
         }

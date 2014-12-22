@@ -31,6 +31,7 @@ public class UDP_Broadcast_Send extends AsyncTask<String, Void, String> {
             data_byte = data_frame.getJSONObject("data").toString().getBytes("UTF-8");
             Log.d(log_Head + " - doInBackground","new String(data_byte,\"UTF-8\") : " + new String(data_byte,"UTF-8"));
             InetAddress broadcastIP = InetAddress.getByName("192.168.42.255");
+//            InetAddress broadcastIP = InetAddress.getByName("10.0.3.255");
             Log.d(log_Head + " - doInBackground","broadcast IP : 192.168.42.255");
 
             // open socket and packet
@@ -41,6 +42,7 @@ public class UDP_Broadcast_Send extends AsyncTask<String, Void, String> {
 	        socket.close();
             return "Success";
         } catch (Exception e) {
+            Log.d("Exception",log_Head);
             e.printStackTrace();
 	        if(socket != null) socket.close();
             return "Fail";

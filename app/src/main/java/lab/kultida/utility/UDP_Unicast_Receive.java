@@ -42,6 +42,7 @@ public class UDP_Unicast_Receive extends AsyncTask<String, Void, String> {
             socket.close();
             return result;
         } catch (IOException | JSONException e) {
+            Log.d("Exception",log_Head);
             e.printStackTrace();
             if(socket != null) socket.close();
             return "Fail";

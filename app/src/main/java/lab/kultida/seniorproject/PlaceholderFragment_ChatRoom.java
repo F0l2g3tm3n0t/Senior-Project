@@ -1,11 +1,10 @@
 package lab.kultida.seniorproject;
 
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,7 +33,6 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
     protected Calendar calendar;
     protected SimpleDateFormat time;
     protected SimpleDateFormat date;
-    protected String myUser = "Anonymous";
 	protected int clientPort = 20394;
 	protected int serverPort = 22220;
 
@@ -44,12 +42,27 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 
         defaultOperation();
         getComponent();
-        welcomeUser();
         createChat();
         createTime();
+        pullDataFromDatabase();
         receiveBroadcast_Chatroom();
 
         return rootView;
+    }
+
+    protected void pullDataFromDatabase(){
+        JSONArray data_frame_array = database.selectAllDataChatroom(new String[]{database.getTABLE_ChatRoom_Date(),database.getTABLE_ChatRoom_Time()});
+        Log.d("pullDataFromDatabase()","data_frame_array : " + data_frame_array.toString());
+        try {
+            for(int i = 0;i < data_frame_array.length();i++){
+                JSONObject data_frame = data_frame_array.getJSONObject(i);
+                adapter.addChatMessage(data_frame);
+                adapter.notifyDataSetChanged();
+                listView_Chatroom.setSelection(adapter.getCount() - 1);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void receiveBroadcast_Chatroom(){
@@ -64,23 +77,6 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         } else {
             new UDP_Broadcast_Receive_ChatRoom().execute(data.toString());
         }
-    }
-
-    protected void welcomeUser(){
-        final EditText input = new EditText(activity);
-        AlertDialog.Builder adb_getUser = new AlertDialog.Builder(activity);
-        adb_getUser.setTitle("Create User");
-        adb_getUser.setMessage("Please Enter Your Name");
-        adb_getUser.setView(input);
-        adb_getUser.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(!input.getText().toString().matches("")) myUser = input.getText().toString();
-                Toast.makeText(activity,"Welcome " + myUser,Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        adb_getUser.show();
     }
 
     protected void getComponent(){
@@ -126,7 +122,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
                 JSONObject data = new JSONObject();
                 JSONObject data_frame = new JSONObject();
 	            try {
-		            data.put("user",myUser);
+		            data.put("user",activity.myUser);
 		            data.put("message",editText_ChatRoom.getText().toString());
 		            data.put("time",time.format(calendar.getTime()));
 		            data.put("date",date.format(calendar.getTime()));
