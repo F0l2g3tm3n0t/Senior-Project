@@ -28,8 +28,11 @@ public class DataBase extends SQLiteOpenHelper{
     private final String TABLE_ChatRoom_Time = "time";
     private final String TABLE_ChatRoom_FromMe = "fromMe";
 
-    private final String TABLE_USER = "USER";
-    private final String TABLE_USER_Name = "name";
+    private final String TABLE_User = "USER";
+    private final String TABLE_User_Name = "name";
+
+    private final String TABLE_Phone = "PHONE";
+    private final String TABLE_Phone_Number = "number";
 
     public DataBase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -53,13 +56,22 @@ public class DataBase extends SQLiteOpenHelper{
         Log.d("CREATE TABLE", "Create Table Chatroom Successfully.");
 
         db.execSQL(
-                "CREATE TABLE " + TABLE_USER +
+                "CREATE TABLE " + TABLE_User +
                         "(" +
-                        TABLE_USER_Name +" TEXT" +
+                        TABLE_User_Name +" TEXT" +
                         ");"
         );
 
         Log.d("CREATE TABLE", "Create Table User Successfully.");
+
+        db.execSQL(
+                "CREATE TABLE " + TABLE_Phone +
+                        "(" +
+                        TABLE_Phone_Number +" TEXT" +
+                        ");"
+        );
+
+        Log.d("CREATE TABLE", "Create Table Phone Successfully.");
     }
 
     @Override
@@ -101,15 +113,21 @@ public class DataBase extends SQLiteOpenHelper{
         SQLiteDatabase db = null;
         Cursor cursor = null;
         try {
-            String order = "";
-            for(int i = 0;i < OrderBy.length;i++){
-                if(i != 0){
-                    order = order + ", ";
+            String strSQL = "";
+            if(OrderBy != null){
+                String order = "";
+                for(int i = 0;i < OrderBy.length;i++){
+                    if(i != 0){
+                        order = order + ", ";
+                    }
+                    order = order + OrderBy[i];
                 }
-                order = order + OrderBy[i];
+
+                strSQL = "SELECT  * FROM " + TABLE_ChatRoom + " ORDER BY " + order;
+            }else{
+                strSQL = "SELECT  * FROM " + TABLE_ChatRoom;
             }
 
-            String strSQL = "SELECT  * FROM " + TABLE_ChatRoom + " ORDER BY " + order;
             Log.d("Database - SelectAllData","SQL LITE : " + strSQL);
             db = this.getReadableDatabase();
             cursor = db.rawQuery(strSQL, null);
@@ -141,35 +159,51 @@ public class DataBase extends SQLiteOpenHelper{
         }
     }
 
-    public JSONArray selectAllDataUser(String[] OrderBy){
+    public ArrayList<String> selectAllDataUser(String[] OrderBy){
         SQLiteDatabase db = null;
         Cursor cursor = null;
         try {
-            String order = "";
-            for(int i = 0;i < OrderBy.length;i++){
-                if(i != 0){
-                    order = order + ", ";
-                    order = order + OrderBy[i];
-                }
-            }
-
-            String strSQL = "SELECT  * FROM " + TABLE_USER + " ORDER BY " + order;
+            String strSQL = "SELECT  * FROM " + TABLE_User;
             Log.d("Database - SelectAllData","SQL LITE : " + strSQL);
             db = this.getReadableDatabase();
             cursor = db.rawQuery(strSQL, null);
-            JSONArray data_frame_array = null;
+            ArrayList<String> MyArrJson = new ArrayList<>();
             if(cursor != null){
-                ArrayList<String> MyArrJson = new ArrayList<>();
                 if (cursor.moveToFirst()) {
                     do {
                         MyArrJson.add(cursor.getString(0));
                     } while (cursor.moveToNext());
                 }
-                data_frame_array = new JSONArray(MyArrJson);
                 cursor.close();
             }
             db.close();
-            return data_frame_array;
+            return MyArrJson;
+        } catch (Exception e) {
+            if(db != null) db.close();
+            if(cursor != null) cursor.close();
+            return null;
+        }
+    }
+
+    public ArrayList<String> selectAllDataPhone(String[] OrderBy){
+        SQLiteDatabase db = null;
+        Cursor cursor = null;
+        try {
+            String strSQL = "SELECT  * FROM " + TABLE_Phone;
+            Log.d("Database - SelectAllData","SQL LITE : " + strSQL);
+            db = this.getReadableDatabase();
+            cursor = db.rawQuery(strSQL, null);
+            ArrayList<String> MyArrJson = new ArrayList<>();
+            if(cursor != null){
+                if (cursor.moveToFirst()) {
+                    do {
+                        MyArrJson.add(cursor.getString(0));
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+            }
+            db.close();
+            return MyArrJson;
         } catch (Exception e) {
             if(db != null) db.close();
             if(cursor != null) cursor.close();
@@ -257,16 +291,28 @@ public class DataBase extends SQLiteOpenHelper{
     }
 
 
-
-    public String getTABLE_USER_Name() {
-        return TABLE_USER_Name;
+    public String getTABLE_User_Name() {
+        return TABLE_User_Name;
     }
 
-    public String[] getTable_USER_Column(){
-        return new String[]{TABLE_USER};
+    public String[] getTable_User_Column(){
+        return new String[]{TABLE_User_Name};
     }
 
-    public String getTABLE_USER() {
-        return TABLE_USER;
+    public String getTABLE_User() {
+        return TABLE_User;
+    }
+
+
+    public String getTABLE_Phone() {
+        return TABLE_Phone;
+    }
+
+    public String[] getTable_Phone_Column(){
+        return new String[]{TABLE_Phone_Number};
+    }
+
+    public String getTABLE_Phone_Number() {
+        return TABLE_Phone_Number;
     }
 }
