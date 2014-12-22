@@ -25,8 +25,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.apache.http.conn.util.InetAddressUtils;
@@ -47,7 +49,7 @@ import lab.kultida.utility.TCP_Unicast_Send;
 import lab.kultida.utility.UDP_Broadcast_Receive;
 
 
-public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private CharSequence mTitle;
@@ -66,6 +68,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected PlaceholderFragment_AskForHelp fragment_ask_for_help;
     protected PlaceholderFragment_ChatRoom fragment_chatRoom;
     protected String myUser = "Anonymous";
+    protected String myPhone = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +83,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         setUpAlarm();
         receiveBroadcast_AlarmSignal();
         welcomeUser();
-
-//        Log.d("Phone number",getPhoneNumber());
+        
+        fragment_chatRoom.activity = this;
+        fragment_chatRoom.database = database;
+        fragment_chatRoom.receiveBroadcast_Chatroom();
     }
 
     protected void createFragment(){
@@ -91,19 +96,48 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     }
 
     protected void welcomeUser(){
-        final EditText input = new EditText(this);
+        final AutoCompleteTextView input_user = new AutoCompleteTextView(this);
+        input_user.setHint("First Name");
+        ArrayAdapter<String> adapter_user = new ArrayAdapter<>(this,android.R.layout.simple_dropdown_item_1line,database.selectAllDataUser(null));
+        input_user.setThreshold(1);
+        input_user.setAdapter(adapter_user);
+
+        final AutoCompleteTextView input_phone = new AutoCompleteTextView(this);
+        input_phone.setHint("Phone Number");
+        ArrayAdapter<String> adapter_phone = new ArrayAdapter<>(this,android.R.layout.simple_dropdown_item_1line,database.selectAllDataPhone(null));
+        input_phone.setThreshold(1);
+        input_phone.setAdapter(adapter_phone);
+
+        LinearLayout layout = new LinearLayout(this);
+
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(input_user);
+        layout.addView(input_phone);
+
+
         AlertDialog.Builder adb_getUser = new AlertDialog.Builder(this);
         adb_getUser.setTitle("Create User");
-        adb_getUser.setMessage("Please Enter Your Name");
-        adb_getUser.setView(input);
+        adb_getUser.setMessage("Please Enter Your Name and Phone Number\n");
+        adb_getUser.setView(layout);
         adb_getUser.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-	        @Override
-	        public void onClick(DialogInterface dialog, int which) {
-		        if (!input.getText().toString().matches("")) myUser = input.getText().toString();
-		        Toast.makeText(MainActivity.this, "Welcome " + myUser, Toast.LENGTH_SHORT).show();
-	        }
-        });
 
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!input_user.getText().toString().matches("")) {
+                    myUser = input_user.getText().toString();
+                }
+
+                if (!input_phone.getText().toString().matches("")) {
+                    myPhone = input_phone.getText().toString();
+                }
+
+                database.insertData(database.getTABLE_User(), database.getTable_User_Column(), new String[]{myUser});
+                database.insertData(database.getTABLE_Phone(), database.getTable_Phone_Column(), new String[]{myPhone});
+
+                Toast.makeText(MainActivity.this, "Welcome " + myUser + " : " + myPhone, Toast.LENGTH_SHORT).show();
+            }
+
+        });
         adb_getUser.show();
     }
 

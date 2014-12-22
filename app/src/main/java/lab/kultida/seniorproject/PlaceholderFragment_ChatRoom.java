@@ -35,6 +35,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
     protected SimpleDateFormat date;
 	protected int clientPort = 20394;
 	protected int serverPort = 22220;
+    protected boolean chatroom_alreadyopen = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -45,7 +46,8 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         createChat();
         createTime();
         pullDataFromDatabase();
-        receiveBroadcast_Chatroom();
+//        receiveBroadcast_Chatroom();
+        chatroom_alreadyopen = true;
 
         return rootView;
     }
@@ -175,6 +177,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         @Override
         protected void onPreExecute() {
             log_Head = "UDP_Broadcast_Receive_ChatRoom";
+//            if(activity == null) myAddress = "no";
             myAddress = activity.getIPAddress(true);
             super.onPreExecute();
         }
@@ -194,9 +197,11 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 		        } catch (JSONException e) {
 			        e.printStackTrace();
 		        }
-			    adapter.addChatMessage(data_frame);
-		        adapter.notifyDataSetChanged();
-	            listView_Chatroom.setSelection(adapter.getCount() - 1);
+                if(chatroom_alreadyopen){
+                    adapter.addChatMessage(data_frame);
+                    adapter.notifyDataSetChanged();
+                    listView_Chatroom.setSelection(adapter.getCount() - 1);
+                }
 	        }
 
 	        //Start Server Again
