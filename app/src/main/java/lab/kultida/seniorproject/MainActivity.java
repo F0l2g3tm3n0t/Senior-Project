@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,6 +70,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         updateLocate();
         setUpAlarm();
         receiveBroadcast_AlarmSignal();
+        Log.d("Phone number",getPhoneNumber());
     }
 
     protected void receiveBroadcast_AlarmSignal(){
@@ -238,6 +240,13 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         WifiManager manager = (WifiManager)(getSystemService(Context.WIFI_SERVICE));
         WifiInfo info = manager.getConnectionInfo();
         return info.getMacAddress();
+    }
+
+    protected String getPhoneNumber(){
+        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        String phoneNumber = tm.getLine1Number();
+        Log.d("phoneNumber2",phoneNumber);
+        return phoneNumber;
     }
 
     /*Connect To WIFI*/
