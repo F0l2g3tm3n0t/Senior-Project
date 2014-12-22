@@ -42,6 +42,7 @@ import java.util.List;
 
 import lab.kultida.utility.DataBase;
 import lab.kultida.utility.JSON_Parser;
+import lab.kultida.utility.TCP_Unicast_Auto_Send;
 import lab.kultida.utility.TCP_Unicast_Send;
 import lab.kultida.utility.UDP_Broadcast_Receive;
 
@@ -96,11 +97,11 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         adb_getUser.setMessage("Please Enter Your Name");
         adb_getUser.setView(input);
         adb_getUser.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(!input.getText().toString().matches("")) myUser = input.getText().toString();
-                Toast.makeText(MainActivity.this,"Welcome " + myUser,Toast.LENGTH_SHORT).show();
-            }
+	        @Override
+	        public void onClick(DialogInterface dialog, int which) {
+		        if (!input.getText().toString().matches("")) myUser = input.getText().toString();
+		        Toast.makeText(MainActivity.this, "Welcome " + myUser, Toast.LENGTH_SHORT).show();
+	        }
         });
 
         adb_getUser.show();
@@ -145,7 +146,12 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 		}
 
         Log.d("MainActivity - updateLocate()","TCP_Unicast_Send_UpdateLocation().execute(data_frame.toString()");
-		new TCP_Unicast_Send_UpdateLocation().execute(data_frame.toString());
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			new TCP_Unicast_Send_UpdateLocation().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
+		} else {
+			new TCP_Unicast_Send_UpdateLocation().execute(data_frame.toString());
+		}
+		//new TCP_Unicast_Send_UpdateLocation().execute(data_frame.toString());
 
 	}
 
@@ -577,7 +583,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         }
     }
 
-	protected class TCP_Unicast_Send_UpdateLocation extends TCP_Unicast_Send {
+	protected class TCP_Unicast_Send_UpdateLocation extends TCP_Unicast_Auto_Send {
 
         @Override
         protected void onPreExecute() {
@@ -585,19 +591,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             super.onPreExecute();
         }
 
-        protected void sleep(){
-    //            try {
-    //                Log.d(log_Head + " - onPostExecute","Thread sleep");
-    //                Thread.sleep(60000); // wait for 1 minute
-    //                Log.d(log_Head + " - onPostExecute","Thread wake up");
-    //            } catch (InterruptedException e) {
-    //                e.printStackTrace();
-    //            }
-        }
-
         @Override
         protected void onPostExecute(String result) {
-    //            updateLocate();
+                updateLocate();
         }
     }
 

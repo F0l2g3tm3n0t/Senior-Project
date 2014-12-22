@@ -23,10 +23,6 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
         super.onPreExecute();
     }
 
-    protected void sleep(){
-
-    }
-
     @Override
     protected String doInBackground(String... arg0) {
         Socket socket = null;
@@ -49,15 +45,15 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
             output.writeUTF(data);
             Log.d(log_Head + " - doInBackground", "receive data : " + data);
             output.flush();
-            output.close();
-            socket.close();
+
 
             if(receiveData){
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 data_receive = input.readUTF();
             }
+	        output.close();
+	        socket.close();
 
-            sleep();
             return "Success : " + data;
         }catch (Exception e){
             Log.d("Exception",log_Head);
@@ -68,7 +64,6 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            sleep();
             return "Fail";
         }
     }
