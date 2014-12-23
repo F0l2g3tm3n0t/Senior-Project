@@ -332,9 +332,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
     /*Connect To WIFI*/
     //TODO What r u doing
-    protected void connectToWifi(){
+    protected void connectToWifi(final String networkSSID){
         setSupportProgressBarIndeterminateVisibility(true);
-        String networkSSID = "My_AP";
 //        String networkPass = "";
         WifiConfiguration conf = new WifiConfiguration();
         conf.SSID = "\"" + networkSSID + "\"";
@@ -395,7 +394,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 adb_ConnectWIFI.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        connectToWifi();
+                        connectToWifi(networkSSID);
                     }
                 });
                 adb_ConnectWIFI.show();
@@ -502,7 +501,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 checkServerConnection();
                 break;
             case R.id.connectWifi :
-                connectToWifi();
+                connectToWifi("My_AP_Pi");
                 break;
             case R.id.action_getJSONData :
                 getJSONData();
