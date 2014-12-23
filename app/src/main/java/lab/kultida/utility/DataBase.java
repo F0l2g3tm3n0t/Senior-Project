@@ -74,7 +74,7 @@ public class DataBase extends SQLiteOpenHelper{
         db.execSQL(
                 "CREATE TABLE " + TABLE_User +
                         "(" +
-                        TABLE_User_Name +" TEXT" +
+                        TABLE_User_Name +" TEXT PRIMARY KEY" +
                         ");"
         );
 
@@ -83,7 +83,7 @@ public class DataBase extends SQLiteOpenHelper{
         db.execSQL(
                 "CREATE TABLE " + TABLE_Phone +
                         "(" +
-                        TABLE_Phone_Number +" TEXT" +
+                        TABLE_Phone_Number +" TEXT PRIMARY KEY" +
                         ");"
         );
 

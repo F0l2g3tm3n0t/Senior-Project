@@ -235,7 +235,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected void checkIP(){
         AlertDialog.Builder adb_CheckIp = new AlertDialog.Builder(MainActivity.this);
         adb_CheckIp.setTitle("Check IP Address");
-        adb_CheckIp.setMessage("IP Address : " + getIPAddress(true));
+        adb_CheckIp.setMessage("Network : " + ((WifiManager)getSystemService(WIFI_SERVICE)).getConnectionInfo().getSSID() + "\nIP Address : " + getIPAddress(true));
         adb_CheckIp.setPositiveButton("OK", null);
         adb_CheckIp.show();
     }
