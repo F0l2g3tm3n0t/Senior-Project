@@ -82,10 +82,10 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
     }
 
     protected void getComponent(){
-        listView_Chatroom = (ListView)rootView.findViewById(R.id.listView_ChatRoom);
+        listView_Chatroom = (ListView)rootView.findViewById(R.id.listView_ChatArea);
         textView_Info = (TextView)rootView.findViewById(R.id.textView_Info);
-        editText_ChatRoom = (EditText)rootView.findViewById(R.id.editText_ChatRoom);
-        button_ChatRoom = (Button)rootView.findViewById(R.id.button_ChatRoom);
+        editText_ChatRoom = (EditText)rootView.findViewById(R.id.editText_ChatArea);
+        button_ChatRoom = (Button)rootView.findViewById(R.id.button_ChatArea);
         button_ChatRoom.setOnClickListener(this);
     }
 
@@ -108,7 +108,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button_ChatRoom:
+            case R.id.button_ChatArea:
                 /* JSON Format
                     data_frame
                         fromMe
@@ -169,8 +169,6 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 
         }
     }
-
-
 
     protected class UDP_Broadcast_Receive_ChatRoom extends UDP_Broadcast_Receive {
 

@@ -28,6 +28,13 @@ public class DataBase extends SQLiteOpenHelper{
     private final String TABLE_ChatRoom_Time = "time";
     private final String TABLE_ChatRoom_FromMe = "fromMe";
 
+	private final String TABLE_ChatArea = "CHATAREA";
+	private final String TABLE_ChatArea_User = "user";
+	private final String TABLE_ChatArea_Message = "message";
+	private final String TABLE_ChatArea_Date = "date";
+	private final String TABLE_ChatArea_Time = "time";
+	private final String TABLE_ChatArea_FromMe = "fromMe";
+
     private final String TABLE_User = "USER";
     private final String TABLE_User_Name = "name";
 
@@ -50,10 +57,19 @@ public class DataBase extends SQLiteOpenHelper{
                         TABLE_ChatRoom_Date + " TEXT," +
                         TABLE_ChatRoom_Time + " TEXT," +
                         TABLE_ChatRoom_FromMe + "   " +
-                        ");"
+                        ");" +
+		        "CREATE TABLE " + TABLE_ChatArea +
+				        "(" +
+				        TABLE_ChatArea_User +" TEXT, " +
+				        TABLE_ChatArea_Message + " TEXT, " +
+				        TABLE_ChatArea_Date + " TEXT," +
+				        TABLE_ChatArea_Time + " TEXT," +
+				        TABLE_ChatArea_FromMe + "   " +
+				        ");"
         );
 
         Log.d("CREATE TABLE", "Create Table Chatroom Successfully.");
+	    Log.d("CREATE TABLE", "Create Table Chatarea Successfully.");
 
         db.execSQL(
                 "CREATE TABLE " + TABLE_User +
@@ -77,6 +93,7 @@ public class DataBase extends SQLiteOpenHelper{
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS" + TABLE_ChatRoom);
+	    db.execSQL("DROP TABLE IF EXISTS" + TABLE_ChatArea);
         onCreate(db);
     }
 
@@ -158,6 +175,56 @@ public class DataBase extends SQLiteOpenHelper{
             return null;
         }
     }
+
+	public JSONArray selectAllDataChatArea(String[] OrderBy){
+		SQLiteDatabase db = null;
+		Cursor cursor = null;
+		try {
+			String strSQL = "";
+			if(OrderBy != null){
+				String order = "";
+				for(int i = 0;i < OrderBy.length;i++){
+					if(i != 0){
+						order = order + ", ";
+					}
+					order = order + OrderBy[i];
+				}
+
+				strSQL = "SELECT  * FROM " + TABLE_ChatArea + " ORDER BY " + order;
+			}else{
+				strSQL = "SELECT  * FROM " + TABLE_ChatArea;
+			}
+
+			Log.d("Database - SelectAllData","SQL LITE : " + strSQL);
+			db = this.getReadableDatabase();
+			cursor = db.rawQuery(strSQL, null);
+			JSONArray data_frame_array = null;
+			if(cursor != null){
+				ArrayList<JSONObject> MyArrJson = new ArrayList<>();
+				if (cursor.moveToFirst()) {
+					do {
+						JSONObject data_frame = new JSONObject();
+						JSONObject data = new JSONObject();
+						data.put("user",cursor.getString(0));
+						data.put("message",cursor.getString(1));
+						data.put("date",cursor.getString(2));
+						data.put("time",cursor.getString(3));
+						data_frame.put("fromMe",cursor.getString(4));
+						data_frame.put("data",data);
+						MyArrJson.add(data_frame);
+					} while (cursor.moveToNext());
+				}
+				data_frame_array = new JSONArray(MyArrJson);
+				cursor.close();
+			}
+			db.close();
+			return data_frame_array;
+		} catch (Exception e) {
+			if(db != null) db.close();
+			if(cursor != null) cursor.close();
+			return null;
+		}
+	}
 
     public ArrayList<String> selectAllDataUser(String[] OrderBy){
         SQLiteDatabase db = null;
@@ -254,14 +321,6 @@ public class DataBase extends SQLiteOpenHelper{
         }
     }
 
-
-
-
-
-
-
-
-
     public String getTABLE_ChatRoom(){
         return TABLE_ChatRoom;
     }
@@ -286,7 +345,7 @@ public class DataBase extends SQLiteOpenHelper{
         return TABLE_ChatRoom_Time;
     }
 
-    public String getTABLE_ChatRoom_FromMe() {
+	public String getTABLE_ChatRoom_FromMe() {
         return TABLE_ChatRoom_FromMe;
     }
 
@@ -315,4 +374,32 @@ public class DataBase extends SQLiteOpenHelper{
     public String getTABLE_Phone_Number() {
         return TABLE_Phone_Number;
     }
+
+	public String getTABLE_ChatArea() {
+		return TABLE_ChatArea;
+	}
+
+	public String getTABLE_ChatArea_User() {
+		return TABLE_ChatArea_User;
+	}
+
+	public String getTABLE_ChatArea_Message() {
+		return TABLE_ChatArea_Message;
+	}
+
+	public String getTABLE_ChatArea_Date() {
+		return TABLE_ChatArea_Date;
+	}
+
+	public String getTABLE_ChatArea_Time() {
+		return TABLE_ChatArea_Time;
+	}
+
+	public String getTABLE_ChatArea_FromMe() {
+		return TABLE_ChatArea_FromMe;
+	}
+
+	public String[] getTable_ChatArea_Column(){
+		return new String[]{TABLE_ChatArea_User, TABLE_ChatArea_Message, TABLE_ChatArea_Date, TABLE_ChatArea_Time, TABLE_ChatArea_FromMe};
+	}
 }

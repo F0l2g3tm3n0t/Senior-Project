@@ -67,6 +67,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected PlaceholderFragment_Home fragment_home;
     protected PlaceholderFragment_AskForHelp fragment_ask_for_help;
     protected PlaceholderFragment_ChatRoom fragment_chatRoom;
+	protected PlaceholderFragment_ChatArea fragment_chatArea;
     protected String myUser = "Anonymous";
     protected String myPhone = "";
 
@@ -87,12 +88,17 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         fragment_chatRoom.activity = this;
         fragment_chatRoom.database = database;
         fragment_chatRoom.receiveBroadcast_Chatroom();
+
+	    fragment_chatArea.activity = this;
+	    fragment_chatArea.database = database;
+	    fragment_chatArea.receiveBroadcast_Chatarea();
     }
 
     protected void createFragment(){
         this.fragment_home = new PlaceholderFragment_Home();
         this.fragment_ask_for_help = new PlaceholderFragment_AskForHelp();
         this.fragment_chatRoom = new PlaceholderFragment_ChatRoom();
+	    this.fragment_chatArea = new PlaceholderFragment_ChatArea();
     }
 
     protected void welcomeUser(){
@@ -472,6 +478,19 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 transaction.commit();
                 mTitle = getString(R.string.title_section3);
                 break;
+
+	        case 3:
+		        lastTag = "chatArea";
+		        temp = fragmentManager.findFragmentByTag(lastTag);
+		        if(temp != null){
+			        transaction.show(temp);
+		        }else{
+			        transaction.add(R.id.container, fragment_chatArea, lastTag);
+			        transaction.addToBackStack(null);
+		        }
+		        transaction.commit();
+		        mTitle = getString(R.string.title_section4);
+		        break;
         }
     }
 
