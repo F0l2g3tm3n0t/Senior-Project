@@ -3,6 +3,7 @@ package lab.kultida.seniorproject;
 
 
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +46,7 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
         button_AskForHelp = (Button)rootView.findViewById(R.id.button_AskForHelp);
         button_AskForHelp.setOnClickListener(this);
         textView_Output = (TextView)rootView.findViewById(R.id.textView_Output);
+        textView_Output.setMovementMethod(new ScrollingMovementMethod());
     }
 
     @Override
