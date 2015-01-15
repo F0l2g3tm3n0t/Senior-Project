@@ -12,7 +12,7 @@ import java.net.InetAddress;
 public class UDP_Broadcast_Send extends AsyncTask<String, Void, String> {
 
     protected String log_Head;
-
+	protected InetAddress broadcastIP;
     @Override
     protected void onPreExecute() {
         // log_head
@@ -30,9 +30,9 @@ public class UDP_Broadcast_Send extends AsyncTask<String, Void, String> {
             int serverPort = data_frame.getInt("serverPort");
             data_byte = data_frame.getJSONObject("data").toString().getBytes("UTF-8");
             Log.d(log_Head + " - doInBackground","new String(data_byte,\"UTF-8\") : " + new String(data_byte,"UTF-8"));
-            InetAddress broadcastIP = InetAddress.getByName("192.168.42.255");
+            //InetAddress broadcastIP = InetAddress.getByName("192.168.42.255");
 //            InetAddress broadcastIP = InetAddress.getByName("10.0.3.255");
-            Log.d(log_Head + " - doInBackground","broadcast IP : 192.168.42.255");
+            Log.d(log_Head + " - doInBackground","broadcast IP : " + broadcastIP.getHostAddress());
 
             // open socket and packet
             socket = new DatagramSocket();

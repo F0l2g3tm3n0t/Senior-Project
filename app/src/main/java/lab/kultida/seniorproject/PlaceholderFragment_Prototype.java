@@ -5,10 +5,14 @@ package lab.kultida.seniorproject;
  */
 
 import android.content.Context;
+import android.net.DhcpInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.support.v4.app.Fragment;
 import android.view.View;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import lab.kultida.utility.DataBase;
 
@@ -32,6 +36,23 @@ public class PlaceholderFragment_Prototype extends Fragment implements View.OnCl
         serverIP = activity.serverIP;
         database = activity.database;
     }
+
+	InetAddress getBroadcastAddress() {
+		WifiManager wifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+		DhcpInfo dhcp = wifi.getDhcpInfo();
+		// handle null somehow
+
+		int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
+		byte[] quads = new byte[4];
+		for (int k = 0; k < 4; k++)
+			quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+		try {
+			return InetAddress.getByAddress(quads);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
     @Override
     public void onClick(View v) {

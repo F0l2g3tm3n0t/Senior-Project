@@ -259,6 +259,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             e.printStackTrace();
         }
 
+
+
         Log.d("MainActivity - checkIPAndServerConnection()", "TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
         new TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString());
 

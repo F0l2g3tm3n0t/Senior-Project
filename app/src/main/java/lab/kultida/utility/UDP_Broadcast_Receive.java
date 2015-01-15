@@ -29,7 +29,6 @@ public class UDP_Broadcast_Receive extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... arg0) {
         DatagramSocket socket = null;
-        byte[] buf = new byte[2048];
         try {
             // Initial condition
             JSONObject data_frame = new JSONObject(arg0[0]);
@@ -40,28 +39,30 @@ public class UDP_Broadcast_Receive extends AsyncTask<String, Void, String> {
             Log.d(log_Head + " - doInBackground","open socket");
             socket = new DatagramSocket(serverPort);
             socket.setBroadcast(true);
+			while(true){
+				// receive packet
+				Log.d(log_Head + " - doInBackground","open packet");
+				byte[] buf = new byte[3000];
+				DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
-            // receive packet
-            Log.d(log_Head + " - doInBackground","open packet");
-            DatagramPacket packet = new DatagramPacket(buf, buf.length);
-	        if(!socket.isConnected()) {
-                Log.d(log_Head + " - doInBackground","socket connected");
-		        socket.receive(packet);
-                socket.close();
-                msg = new String(buf, 0, packet.getLength());
-                address = packet.getAddress();
-                Log.d(log_Head + " - doInBackground","packet address : " + address.getHostAddress());
-                Log.d(log_Head + " - doInBackground","my address : " + myAddress);
-                Log.d(log_Head + " - doInBackground","message : " + msg);
+				Log.d(log_Head + " - doInBackground","socket connected");
+				socket.receive(packet);
 
-                if(myAddress.matches(address.getHostAddress())) {
-                    Log.d(log_Head + " - doInBackground", "receive from myself");
-                    return "Fail : MySelf";
-                } else{
-                    Log.d(log_Head + " - doInBackground","receive from other");
-                    return msg;
-                }
-	        }
+				msg = new String(buf, 0, packet.getLength());
+				address = packet.getAddress();
+				Log.d(log_Head + " - doInBackground","packet address : " + address.getHostAddress());
+				Log.d(log_Head + " - doInBackground","my address : " + myAddress);
+				Log.d(log_Head + " - doInBackground","message : " + msg);
+				socket.close();
+				if(myAddress.matches(address.getHostAddress())) {
+					Log.d(log_Head + " - doInBackground", "receive from myself");
+					return "Fail : MySelf";
+				} else{
+					Log.d(log_Head + " - doInBackground","receive from other");
+					return msg;
+				}
+
+			}
         }catch (Exception e){
             Log.d("Exception",log_Head);
             e.printStackTrace();

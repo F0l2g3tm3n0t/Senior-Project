@@ -161,6 +161,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
     @Override
         protected void onPreExecute() {
             log_Head = "UDP_Broadcast_Send_ChatRoom";
+	        broadcastIP = getBroadcastAddress();
             super.onPreExecute();
         }
 
