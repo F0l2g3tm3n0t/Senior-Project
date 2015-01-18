@@ -51,6 +51,7 @@ public class TCP_Unicast_Send extends AsyncTask<String, Void, String> {
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 data_receive = input.readUTF();
             }
+
 	        output.close();
 	        socket.close();
 

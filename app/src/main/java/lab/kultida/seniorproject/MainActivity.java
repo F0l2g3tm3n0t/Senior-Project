@@ -36,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,7 +59,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected Ringtone ringtone;
     protected AudioManager audioManager;
     protected int streamMaxVolume;
-    protected String serverIP = "1.1.1.99";
+    protected String serverIP = "10.0.0.99";
     protected String serverPort_AlarmSignal = "21234";
     protected String serverPort_UpdateLocate = "9998";
     protected String PIIP = "192.168.42.1";
@@ -84,16 +85,25 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         setUpAlarm();
         receiveBroadcast_AlarmSignal();
         welcomeUser();
-        
+
         fragment_chatRoom.activity = this;
         fragment_chatRoom.database = database;
-        fragment_chatRoom.receiveBroadcast_Chatroom();
+        fragment_chatRoom.receiveBroadcast_Chatroom(multicastSocket());
 
 	    fragment_chatArea.activity = this;
 	    fragment_chatArea.database = database;
 	    fragment_chatArea.receiveBroadcast_Chatarea();
     }
-
+	protected MulticastSocket multicastSocket(){
+		MulticastSocket msocket = null;
+		try {
+			msocket = new MulticastSocket(22220);
+			System.out.println("ChatRoom - (Multicast) " + "Receiving");
+			InetAddress group = InetAddress.getByName("224.0.0.1");
+			msocket.joinGroup(group);
+		} catch(Exception e){}
+		return msocket;
+	}
     protected void createFragment(){
         this.fragment_home = new PlaceholderFragment_Home();
         this.fragment_ask_for_help = new PlaceholderFragment_AskForHelp();

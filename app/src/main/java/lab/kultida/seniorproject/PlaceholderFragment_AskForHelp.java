@@ -96,8 +96,7 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
 
     @Override
     protected void onPreExecute() {
-        log_Head = "TCP_Unicast_Send_AskForHelp";
-        super.onPreExecute();
+        log_Head = "TCP_Unicast_Send_AskForHelp";        super.onPreExecute();
     }
 
     @Override
