@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -38,11 +39,15 @@ import org.json.JSONObject;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import lab.kultida.utility.BestLocationListener;
+import lab.kultida.utility.BestLocationProvider;
 import lab.kultida.utility.DataBase;
 import lab.kultida.utility.JSON_Parser;
 import lab.kultida.utility.TCP_Unicast_Auto_Send;
@@ -71,6 +76,15 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 	protected PlaceholderFragment_ChatArea fragment_chatArea;
     protected String myUser = "Anonymous";
     protected String myPhone = "";
+//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, GPSTracker);
+
+    protected BestLocationProvider mBestLocationProvider;
+    protected BestLocationListener mBestLocationListener;
+    protected Calendar calendar;
+    protected SimpleDateFormat time;
+    protected SimpleDateFormat date;
+    protected Double latitude,longitude;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +100,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         receiveBroadcast_AlarmSignal();
         welcomeUser();
 
+        calendar = Calendar.getInstance();
+        time = new SimpleDateFormat("HH:mm");
+        date = new SimpleDateFormat("dd-MM-yyyy");
+
         fragment_chatRoom.activity = this;
         fragment_chatRoom.database = database;
         fragment_chatRoom.receiveBroadcast_Chatroom(multicastSocket());
@@ -94,6 +112,45 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 	    fragment_chatArea.database = database;
 	    fragment_chatArea.receiveBroadcast_Chatarea();
     }
+
+    public void initLocation(){
+        if(mBestLocationListener == null){
+            mBestLocationListener = new BestLocationListener() {
+                public void onStatusChanged(String provider, int status, Bundle extras) { }
+                public void onProviderEnabled(String provider) { }
+                public void onProviderDisabled(String provider) { }
+                public void onLocationUpdateTimeoutExceeded(BestLocationProvider.LocationType type) { }
+                public void onLocationUpdate(Location location, BestLocationProvider.LocationType type, boolean isFresh) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    Log.d("GPSHelper - onLocationChanged","\nDate : " + date.format(calendar.getTime())
+                            + "\nTime : " + time.format(calendar.getTime())
+                            + "\nLatitude : " + latitude
+                            + "\nLongitude : " + longitude
+                            + "\nAltitude : " + location.getAltitude()
+                            + "\nBearing : " + location.getBearing()
+                            + "\nProvider : " + location.getProvider()
+                            + "\nSpeed : " + location.getSpeed());
+                }
+            };
+
+            if(mBestLocationProvider == null){
+                mBestLocationProvider = new BestLocationProvider(this, true, true, 10000, 1000, 15000, 0);
+            }
+        }
+    }
+
+    public void onResume() {
+        super.onResume();
+        initLocation();
+        mBestLocationProvider.startLocationUpdatesWithListener(mBestLocationListener);
+    }
+
+    public void onStop() {
+        super.onStop();
+        mBestLocationProvider.stopLocationUpdates();
+    }
+
 	protected MulticastSocket multicastSocket(){
 		MulticastSocket msocket = null;
 		try {
@@ -104,6 +161,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 		} catch(Exception e){}
 		return msocket;
 	}
+
     protected void createFragment(){
         this.fragment_home = new PlaceholderFragment_Home();
         this.fragment_ask_for_help = new PlaceholderFragment_AskForHelp();
@@ -186,7 +244,11 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 			data.put("signal", "updateLocate");
 			data.put("clientIP", InetAddress.getByName(getIPAddress(true)));
 			data.put("macaddress", getMacAddress());
+            data.put("macaddress", getMacAddress());
+            data.put("macaddress", getMacAddress());
             data.put("fromPi", getNetworkName());
+            data.put("user", myUser);
+            data.put("phone", myPhone);
 
             data_frame.put("serverIP", serverIP);
             data_frame.put("serverPort", serverPort_UpdateLocate);

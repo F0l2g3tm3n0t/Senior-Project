@@ -75,6 +75,8 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
                     data.put("clientIP", InetAddress.getByName(activity.getIPAddress(true)));
                     data.put("macaddress", getMacAddress());
                     data.put("fromPi", activity.getNetworkName());
+                    data.put("user", activity.myUser);
+                    data.put("phone", activity.myPhone);
 
                     data_frame.put("serverIP", serverIP);
                     data_frame.put("serverPort", serverPort);
@@ -84,9 +86,7 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
                 }
 
                 Log.d("Placeholder_AskForHelp - Click()", "TCP_Unicast_Send_AskForHelp()execute(data_frame.toString()");
-
 	            new TCP_Unicast_Send_AskForHelp().execute(data_frame.toString());
-
                 break;
         }
     }
