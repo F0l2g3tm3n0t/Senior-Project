@@ -22,8 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import lab.kultida.utility.TCP_Multicast_Receive;
 import lab.kultida.utility.TCP_Multicast_Send;
+import lab.kultida.utility.UDP_Broadcast_Receive;
 
 public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype {
     protected ListView listView_Chatroom;
@@ -77,11 +77,16 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            new TCP_Multicast_Received_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
-        } else {
-            new TCP_Multicast_Received_ChatRoom().execute(data.toString());
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//            new TCP_Multicast_Received_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
+//        } else {
+//            new TCP_Multicast_Received_ChatRoom().execute(data.toString());
+//        }
+	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		    new TCP_Broadcast_Received_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
+	    } else {
+		    new TCP_Broadcast_Received_ChatRoom().execute(data.toString());
+	    }
     }
 
     protected void getComponent(){
@@ -175,11 +180,44 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 		}
 	}
 
-	private class TCP_Multicast_Received_ChatRoom extends TCP_Multicast_Receive{
+//	private class TCP_Multicast_Received_ChatRoom extends TCP_Multicast_Receive{
+//		@Override
+//		protected void onPreExecute() {
+//			log_Head = "TCP_Multicast_Send_ChatRoom";
+//			socket = msocket;
+//			super.onPreExecute();
+//		}
+//		@Override
+//		protected void onPostExecute(String result) {
+//			if(!result.contains("Fail")){
+//				JSONObject data_frame = null;
+//				try {
+//					JSONObject data = new JSONObject(result);
+//					data_frame = new JSONObject();
+//					data_frame.put("data",data);
+//					data_frame.put("fromMe",false);
+//
+//					String value[] = {data.getString("user"),data.getString("message"),data.getString("date"),data.getString("time"),data_frame.getString("fromMe")};
+//					database.insertData(database.getTABLE_ChatRoom(),database.getTable_ChatRoom_Column(),value);
+//				} catch (JSONException e) {
+//					e.printStackTrace();
+//				}
+//				if(chatroom_alreadyopen){
+//					adapter.addChatMessage(data_frame);
+//					adapter.notifyDataSetChanged();
+//					listView_Chatroom.setSelection(adapter.getCount() - 1);
+//				}
+//			}
+//
+//			//Start Server Again
+//			receiveBroadcast_Chatroom(msocket);
+//		}
+//	}
+
+	private class TCP_Broadcast_Received_ChatRoom extends UDP_Broadcast_Receive {
 		@Override
 		protected void onPreExecute() {
-			log_Head = "TCP_Multicast_Send_ChatRoom";
-			socket = msocket;
+			log_Head = "UDP_Broadcast_Receive_ChatRoom";
 			super.onPreExecute();
 		}
 		@Override
@@ -205,7 +243,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 			}
 
 			//Start Server Again
-			receiveBroadcast_Chatroom(msocket);
+			//receiveBroadcast_Chatroom(msocket);
 		}
 	}
 }
