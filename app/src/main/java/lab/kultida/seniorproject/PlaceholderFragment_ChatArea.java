@@ -20,8 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import lab.kultida.utility.UDP_Broadcast_Receive;
-import lab.kultida.utility.UDP_Broadcast_Send;
+import lab.kultida.utility.TCP_Unicast_Receive;
+import lab.kultida.utility.TCP_Unicast_Send;
 
 public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype {
 
@@ -101,9 +101,9 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 			e.printStackTrace();
 		}
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			new UDP_Broadcast_Receive_ChatArea().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
+			new TCP_Unicast_Receive_ChatArea().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
 		} else {
-			new UDP_Broadcast_Receive_ChatArea().execute(data.toString());
+			new TCP_Unicast_Receive_ChatArea().execute(data.toString());
 		}
 	}
 
@@ -130,7 +130,7 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 					data.put("message",editText_ChatArea.getText().toString());
 					data.put("time",time.format(calendar.getTime()));
 					data.put("date",date.format(calendar.getTime()));
-
+					data.put("flag", "chatarea");
 					data_frame.put("fromMe", true);
 					data_frame.put("clientPort", clientPort);
 					data_frame.put("serverPort", serverPort);
@@ -148,9 +148,9 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 
 	public void addChatMessage(JSONObject data_frame){
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			new UDP_Broadcast_Send_ChatArea().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
+			new TCP_Unicast_Send_ChatArea().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
 		else
-			new UDP_Broadcast_Send_ChatArea().execute(data_frame.toString());
+			new TCP_Unicast_Send_ChatArea().execute(data_frame.toString());
 
 		adapter.addChatMessage(data_frame);
 		adapter.notifyDataSetChanged();
@@ -159,11 +159,11 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 
 
 	//  <<--------------------------  ASYNCTASK OPERATION  ------------------------->>
-	protected class UDP_Broadcast_Send_ChatArea extends UDP_Broadcast_Send {
+	protected class TCP_Unicast_Send_ChatArea extends TCP_Unicast_Send {
 
 		@Override
 		protected void onPreExecute() {
-			log_Head = "UDP_Broadcast_Send_ChatArea";
+			log_Head = "TCP_Unicast_Send_ChatArea";
 			super.onPreExecute();
 		}
 
@@ -173,12 +173,11 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 		}
 	}
 
-	protected class UDP_Broadcast_Receive_ChatArea extends UDP_Broadcast_Receive {
+	protected class TCP_Unicast_Receive_ChatArea extends TCP_Unicast_Receive {
 
 		@Override
 		protected void onPreExecute() {
-			log_Head = "UDP_Broadcast_Receive_ChatArea";
-//            if(activity == null) myAddress = "no";
+			log_Head = "TCP_Unicast_Receive_ChatArea";
 			myAddress = activity.getIPAddress(true);
 			super.onPreExecute();
 		}

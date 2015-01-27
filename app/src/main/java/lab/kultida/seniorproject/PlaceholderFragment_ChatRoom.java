@@ -17,13 +17,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.MulticastSocket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import lab.kultida.utility.TCP_Multicast_Send;
-import lab.kultida.utility.UDP_Broadcast_Receive;
+import lab.kultida.utility.TCP_Unicast_Receive;
+import lab.kultida.utility.TCP_Unicast_Send;
 
 public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype {
     protected ListView listView_Chatroom;
@@ -36,9 +35,8 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
     protected SimpleDateFormat date;
 	protected int clientPort = 20394;
 	protected int serverPort = 22220;
-	protected MulticastSocket msocket;
     protected boolean chatroom_alreadyopen = false;
-
+	protected String piIP = "192.168.42.1";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_chat_room, container, false);
@@ -69,23 +67,17 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         }
     }
 
-    protected void receiveBroadcast_Chatroom(MulticastSocket socket){
+    protected void receiveBroadcast_Chatroom(){
         JSONObject data = new JSONObject();
-	    msocket = socket;
         try {
             data.put("serverPort",serverPort);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//            new TCP_Multicast_Received_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
-//        } else {
-//            new TCP_Multicast_Received_ChatRoom().execute(data.toString());
-//        }
 	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-		    new TCP_Broadcast_Received_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
+		    new TCP_Unicast_Received_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
 	    } else {
-		    new TCP_Broadcast_Received_ChatRoom().execute(data.toString());
+		    new TCP_Unicast_Received_ChatRoom().execute(data.toString());
 	    }
     }
 
@@ -136,11 +128,11 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 		            data.put("message",editText_ChatRoom.getText().toString());
 		            data.put("time",time.format(calendar.getTime()));
 		            data.put("date",date.format(calendar.getTime()));
-
+		            data.put("flag","chatroom");
 		            data_frame.put("fromMe", true);
                     data_frame.put("clientPort", clientPort);
                     data_frame.put("serverPort", serverPort);
-		            //data_frame.put("serverIP", broadcastIP);
+		            data_frame.put("serverIP", piIP);
 		            data_frame.put("data", data);
 
                     String value[] = {data.getString("user"),data.getString("message"),data.getString("date"),data.getString("time"),data_frame.getString("fromMe")};
@@ -160,9 +152,9 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 //		    new UDP_Broadcast_Send_ChatRoom().execute(data_frame.toString());
 
 	    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-		    new TCP_Multicast_send_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
+		    new TCP_Unicast_send_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
 	    } else {
-		    new TCP_Multicast_send_ChatRoom().execute(data_frame.toString());
+		    new TCP_Unicast_send_ChatRoom().execute(data_frame.toString());
 	    }
 
         adapter.addChatMessage(data_frame);
@@ -170,54 +162,23 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         listView_Chatroom.setSelection(adapter.getCount() - 1);
     }
 
+
+
 //  <<--------------------------  ASYNCTASK OPERATION  ------------------------->>
 
-	private class TCP_Multicast_send_ChatRoom extends TCP_Multicast_Send{
+	private class TCP_Unicast_send_ChatRoom extends TCP_Unicast_Send{
 		@Override
 		protected void onPreExecute() {
-			log_Head = "TCP_Broadcast_Send_ChatRoom";
+			log_Head = "TCP_Unicast_Send_ChatRoom";
 			super.onPreExecute();
 		}
 	}
 
-//	private class TCP_Multicast_Received_ChatRoom extends TCP_Multicast_Receive{
-//		@Override
-//		protected void onPreExecute() {
-//			log_Head = "TCP_Multicast_Send_ChatRoom";
-//			socket = msocket;
-//			super.onPreExecute();
-//		}
-//		@Override
-//		protected void onPostExecute(String result) {
-//			if(!result.contains("Fail")){
-//				JSONObject data_frame = null;
-//				try {
-//					JSONObject data = new JSONObject(result);
-//					data_frame = new JSONObject();
-//					data_frame.put("data",data);
-//					data_frame.put("fromMe",false);
-//
-//					String value[] = {data.getString("user"),data.getString("message"),data.getString("date"),data.getString("time"),data_frame.getString("fromMe")};
-//					database.insertData(database.getTABLE_ChatRoom(),database.getTable_ChatRoom_Column(),value);
-//				} catch (JSONException e) {
-//					e.printStackTrace();
-//				}
-//				if(chatroom_alreadyopen){
-//					adapter.addChatMessage(data_frame);
-//					adapter.notifyDataSetChanged();
-//					listView_Chatroom.setSelection(adapter.getCount() - 1);
-//				}
-//			}
-//
-//			//Start Server Again
-//			receiveBroadcast_Chatroom(msocket);
-//		}
-//	}
-
-	private class TCP_Broadcast_Received_ChatRoom extends UDP_Broadcast_Receive {
+	private class TCP_Unicast_Received_ChatRoom extends TCP_Unicast_Receive {
 		@Override
 		protected void onPreExecute() {
-			log_Head = "UDP_Broadcast_Receive_ChatRoom";
+			log_Head = "TCP_Unicast_Receive_ChatRoom";
+			myAddress = activity.getIPAddress(true);
 			super.onPreExecute();
 		}
 		@Override
@@ -243,7 +204,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 			}
 
 			//Start Server Again
-			//receiveBroadcast_Chatroom(msocket);
+			receiveBroadcast_Chatroom();
 		}
 	}
 }

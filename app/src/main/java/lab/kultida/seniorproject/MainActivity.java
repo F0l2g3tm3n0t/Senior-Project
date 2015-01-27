@@ -37,7 +37,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -76,6 +75,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 	protected PlaceholderFragment_ChatArea fragment_chatArea;
     protected String myUser = "Anonymous";
     protected String myPhone = "";
+
 //        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, GPSTracker);
 
     protected BestLocationProvider mBestLocationProvider;
@@ -106,7 +106,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
         fragment_chatRoom.activity = this;
         fragment_chatRoom.database = database;
-        fragment_chatRoom.receiveBroadcast_Chatroom(multicastSocket());
+        fragment_chatRoom.receiveBroadcast_Chatroom();
 
 	    fragment_chatArea.activity = this;
 	    fragment_chatArea.database = database;
@@ -151,16 +151,16 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         mBestLocationProvider.stopLocationUpdates();
     }
 
-	protected MulticastSocket multicastSocket(){
-		MulticastSocket msocket = null;
-		try {
-			msocket = new MulticastSocket(22220);
-			System.out.println("ChatRoom - (Multicast) " + "Receiving");
-			InetAddress group = InetAddress.getByName("224.0.0.1");
-			msocket.joinGroup(group);
-		} catch(Exception e){}
-		return msocket;
-	}
+//	protected MulticastSocket multicastSocket(){
+//		MulticastSocket msocket = null;
+//		try {
+//			msocket = new MulticastSocket(22220);
+//			System.out.println("ChatRoom - (Multicast) " + "Receiving");
+//			InetAddress group = InetAddress.getByName("224.0.0.1");
+//			msocket.joinGroup(group);
+//		} catch(Exception e){}
+//		return msocket;
+//	}
 
     protected void createFragment(){
         this.fragment_home = new PlaceholderFragment_Home();
