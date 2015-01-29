@@ -22,8 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import lab.kultida.utility.UDP_Broadcast_Auto_Send;
 import lab.kultida.utility.UDP_Broadcast_Receive;
-import lab.kultida.utility.UDP_Broadcast_Send;
 
 public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype {
     protected ListView listView_Chatroom;
@@ -154,9 +154,9 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 
     public void addChatMessage(JSONObject data_frame){
 	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-		    new UDP_Broadcast_Send_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
+		    new UDP_Broadcast_Send_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString(),"0");
 	    else
-		    new UDP_Broadcast_Send_ChatRoom().execute(data_frame.toString());
+		    new UDP_Broadcast_Send_ChatRoom().execute(data_frame.toString(),"0");
 
 //	    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 //		    new TCP_Unicast_send_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
@@ -173,16 +173,38 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 
 //  <<--------------------------  ASYNCTASK OPERATION  ------------------------->>
 
-	private class UDP_Broadcast_Send_ChatRoom extends UDP_Broadcast_Send{
-		@Override
-		protected void onPreExecute() {
-			log_Head = "UDP_Broadcast_Send_ChatRoom";
-			try {
-				broadcastIP = InetAddress.getByName("192.168.42.255");
-			} catch (Exception e){}
-			super.onPreExecute();
-		}
-	}
+//	private class UDP_Broadcast_Send_ChatRoom extends UDP_Broadcast_Send{
+//		@Override
+//		protected void onPreExecute() {
+//			log_Head = "UDP_Broadcast_Send_ChatRoom";
+//			try {
+//				broadcastIP = InetAddress.getByName("192.168.42.255");
+//			} catch (Exception e){}
+//			super.onPreExecute();
+//		}
+//	}
+
+    private class UDP_Broadcast_Send_ChatRoom extends UDP_Broadcast_Auto_Send{
+        @Override
+        protected void onPreExecute() {
+            log_Head = "UDP_Broadcast_Send_ChatRoom";
+            try {
+                broadcastIP = InetAddress.getByName("192.168.42.255");
+            } catch (Exception e){}
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+//            textView_Info.append("| " + count + " |");
+//            if(count <= 4){
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+//                    new UDP_Broadcast_Send_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,message,this.count + "");
+//                else
+//                    new UDP_Broadcast_Send_ChatRoom().execute(message,this.count + "");
+//            }
+        }
+    }
 
 	private class UDP_Broadcast_Receive_ChatRoom extends UDP_Broadcast_Receive{
 		@Override
@@ -204,13 +226,14 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 
 					String value[] = {data.getString("user"),data.getString("message"),data.getString("date"),data.getString("time"),data_frame.getString("fromMe")};
 					database.insertData(database.getTABLE_ChatRoom(),database.getTable_ChatRoom_Column(),value);
-				} catch (JSONException e) {
+                    if(chatroom_alreadyopen){
+                        adapter.addChatMessage(data_frame);
+                        adapter.notifyDataSetChanged();
+                        listView_Chatroom.setSelection(adapter.getCount() - 1);
+                    }
+
+                } catch (JSONException e) {
 					e.printStackTrace();
-				}
-				if(chatroom_alreadyopen){
-					adapter.addChatMessage(data_frame);
-					adapter.notifyDataSetChanged();
-					listView_Chatroom.setSelection(adapter.getCount() - 1);
 				}
 			}
 
