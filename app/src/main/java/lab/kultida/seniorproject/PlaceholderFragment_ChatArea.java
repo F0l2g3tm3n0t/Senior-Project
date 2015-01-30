@@ -137,7 +137,7 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 					data_frame.put("data", data);
 
 					String value[] = {data.getString("user"),data.getString("message"),data.getString("date"),data.getString("time"),data_frame.getString("fromMe")};
-					database.insertData(database.getTABLE_ChatArea(),database.getTable_ChatArea_Column(),value);
+					//database.insertData(database.getTABLE_ChatArea(),database.getTable_ChatArea_Column(),value);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -193,7 +193,7 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 					data_frame.put("fromMe",false);
 
 					String value[] = {data.getString("user"),data.getString("message"),data.getString("date"),data.getString("time"),data_frame.getString("fromMe")};
-					database.insertData(database.getTABLE_ChatArea(),database.getTable_ChatArea_Column(),value);
+					//database.insertData(database.getTABLE_ChatArea(),database.getTable_ChatArea_Column(),value);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
