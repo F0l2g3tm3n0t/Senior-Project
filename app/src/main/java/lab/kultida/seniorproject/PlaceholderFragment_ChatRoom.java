@@ -48,7 +48,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         getComponent();
         createChat();
         createTime();
-        pullDataFromDatabase();
+        //pullDataFromDatabase();
 //        receiveBroadcast_Chatroom();
         chatroom_alreadyopen = true;
 
@@ -87,7 +87,6 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 	    } else {
 		    new UDP_Broadcast_Receive_ChatRoom().execute(data.toString());
 	    }
-
     }
 
     protected void getComponent(){
@@ -192,7 +191,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         protected void onPreExecute() {
             log_Head = "UDP_Broadcast_Send_ChatRoom";
             try {
-                broadcastIP = InetAddress.getByName("192.168.42.31");
+                broadcastIP = InetAddress.getByName("192.168.42.255");
             } catch (Exception e){}
             super.onPreExecute();
         }
@@ -220,7 +219,6 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 					data_frame.put("fromMe",false);
 
 					String value[] = {data.getString("user"),data.getString("message"),data.getString("date"),data.getString("time"),data_frame.getString("fromMe")};
-                    receiveBroadcast_Chatroom();
 
                     if(chatroom_alreadyopen){
                         adapter.addChatMessage(data_frame);
@@ -228,14 +226,13 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
                         listView_Chatroom.setSelection(adapter.getCount() - 1);
                     }
                     //database.insertData(database.getTABLE_ChatRoom(),database.getTable_ChatRoom_Column(),value);
-
                 } catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
 
 			//Start Server Again
-
+            receiveBroadcast_Chatroom();
 		}
 	}
 //	private class TCP_Unicast_send_ChatRoom extends TCP_Unicast_Send{

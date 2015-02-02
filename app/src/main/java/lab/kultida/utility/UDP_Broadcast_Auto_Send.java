@@ -14,7 +14,6 @@ public class UDP_Broadcast_Auto_Send extends AsyncTask<String, Void, String> {
     protected String log_Head;
 	protected InetAddress broadcastIP;
     protected String message;
-    protected int count;
     @Override
     protected void onPreExecute() {
         // log_head
@@ -30,9 +29,7 @@ public class UDP_Broadcast_Auto_Send extends AsyncTask<String, Void, String> {
             JSONObject data_frame = new JSONObject(arg0[0]);
             Log.d(log_Head + " - doInBackground","data_frame : " + data_frame);
             int serverPort = data_frame.getInt("serverPort");
-            count = Integer.parseInt(arg0[1]) + 1;
-            message = data_frame.getJSONObject("data").toString();
-            data_byte = message.getBytes("UTF-8");
+            data_byte = data_frame.getJSONObject("data").toString().getBytes("UTF-8");
             Log.d(log_Head + " - doInBackground","new String(data_byte,\"UTF-8\") : " + new String(data_byte,"UTF-8"));
             //InetAddress broadcastIP = InetAddress.getByName("192.168.42.255");
 //            InetAddress broadcastIP = InetAddress.getByName("10.0.3.255");
@@ -43,13 +40,11 @@ public class UDP_Broadcast_Auto_Send extends AsyncTask<String, Void, String> {
             socket.setBroadcast(true);
             DatagramPacket packet = new DatagramPacket(data_byte, data_byte.length, broadcastIP, serverPort);
 //	        socket.send(packet);
-            for(int i = 0;i < 10;i++){
+//            for(int i = 0;i < 2;i++){
                 socket.send(packet);
-
-		            Thread.sleep(200);
-
+//		        Thread.sleep(200);
                 //Log.d("Auto Send","Send round : " + i);
-            }
+//            }
             socket.close();
             return "Success";
         } catch (Exception e) {

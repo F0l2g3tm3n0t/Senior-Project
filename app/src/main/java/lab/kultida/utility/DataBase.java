@@ -27,6 +27,7 @@ public class DataBase extends SQLiteOpenHelper{
     private final String TABLE_ChatRoom_Date = "date";
     private final String TABLE_ChatRoom_Time = "time";
     private final String TABLE_ChatRoom_FromMe = "fromMe";
+    private final String TABLE_ChatRoom_SeqNum = "seqNum";
 
 	private final String TABLE_ChatArea = "CHATAREA";
 	private final String TABLE_ChatArea_User = "user";
@@ -34,6 +35,7 @@ public class DataBase extends SQLiteOpenHelper{
 	private final String TABLE_ChatArea_Date = "date";
 	private final String TABLE_ChatArea_Time = "time";
 	private final String TABLE_ChatArea_FromMe = "fromMe";
+    private final String TABLE_ChatArea_SeqNum = "seqNum";
 
     private final String TABLE_User = "USER";
     private final String TABLE_User_Name = "name";
@@ -56,7 +58,8 @@ public class DataBase extends SQLiteOpenHelper{
                         TABLE_ChatRoom_Message + " TEXT, " +
                         TABLE_ChatRoom_Date + " TEXT," +
                         TABLE_ChatRoom_Time + " TEXT," +
-                        TABLE_ChatRoom_FromMe + "   " +
+                        TABLE_ChatRoom_FromMe + "   ," +
+                        TABLE_ChatRoom_SeqNum + "INT" +
                         ");" +
 		        "CREATE TABLE " + TABLE_ChatArea +
 				        "(" +
@@ -65,6 +68,7 @@ public class DataBase extends SQLiteOpenHelper{
 				        TABLE_ChatArea_Date + " TEXT," +
 				        TABLE_ChatArea_Time + " TEXT," +
 				        TABLE_ChatArea_FromMe + "   " +
+                        TABLE_ChatArea_SeqNum + "INT" +
 				        ");"
         );
 
@@ -160,6 +164,7 @@ public class DataBase extends SQLiteOpenHelper{
                         data.put("date",cursor.getString(2));
                         data.put("time",cursor.getString(3));
                         data_frame.put("fromMe",cursor.getString(4));
+                        data_frame.put("seqNum",cursor.getString(5));
                         data_frame.put("data",data);
                         MyArrJson.add(data_frame);
                     } while (cursor.moveToNext());
@@ -210,6 +215,7 @@ public class DataBase extends SQLiteOpenHelper{
 						data.put("date",cursor.getString(2));
 						data.put("time",cursor.getString(3));
 						data_frame.put("fromMe",cursor.getString(4));
+                        data_frame.put("seqNum",cursor.getString(5));
 						data_frame.put("data",data);
 						MyArrJson.add(data_frame);
 					} while (cursor.moveToNext());
