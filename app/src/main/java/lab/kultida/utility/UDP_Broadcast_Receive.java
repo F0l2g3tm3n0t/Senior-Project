@@ -37,7 +37,7 @@ public class UDP_Broadcast_Receive extends AsyncTask<String, Void, String> {
 
             // open socket
             Log.d(log_Head + " - doInBackground","open socket");
-            socket = new DatagramSocket(serverPort);
+            socket = new DatagramSocket(22220);
             socket.setBroadcast(true);
 			while(true){
 				// receive packet

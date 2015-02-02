@@ -37,7 +37,9 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 	protected int clientPort = 20394;
 	protected int serverPort = 22220;
     protected boolean chatroom_alreadyopen = false;
-	protected String piIP = "192.168.42.255";
+	protected String piIP = "192.168.42.224";
+	protected int seqNum = 0;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_chat_room, container, false);
@@ -127,7 +129,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
                             time
                             date
                 */
-
+				seqNum++;
                 JSONObject data = new JSONObject();
                 JSONObject data_frame = new JSONObject();
 	            try {
@@ -136,6 +138,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 		            data.put("time",time.format(calendar.getTime()));
 		            data.put("date",date.format(calendar.getTime()));
 		            data.put("flag","chatroom");
+		            data.put("seqNum", seqNum);
 		            data_frame.put("fromMe", true);
                     data_frame.put("clientPort", clientPort);
                     data_frame.put("serverPort", serverPort);
@@ -184,26 +187,18 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 //		}
 //	}
 
-    private class UDP_Broadcast_Send_ChatRoom extends UDP_Broadcast_Auto_Send{
+    private class UDP_Broadcast_Send_ChatRoom extends UDP_Broadcast_Auto_Send {
         @Override
         protected void onPreExecute() {
             log_Head = "UDP_Broadcast_Send_ChatRoom";
             try {
-                broadcastIP = InetAddress.getByName("192.168.42.255");
+                broadcastIP = InetAddress.getByName("192.168.42.31");
             } catch (Exception e){}
             super.onPreExecute();
         }
 
         @Override
-        protected void onPostExecute(String result) {
-//            textView_Info.append("| " + count + " |");
-//            if(count <= 4){
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-//                    new UDP_Broadcast_Send_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,message,this.count + "");
-//                else
-//                    new UDP_Broadcast_Send_ChatRoom().execute(message,this.count + "");
-//            }
-        }
+        protected void onPostExecute(String result) {}
     }
 
 	private class UDP_Broadcast_Receive_ChatRoom extends UDP_Broadcast_Receive{

@@ -42,10 +42,13 @@ public class UDP_Broadcast_Auto_Send extends AsyncTask<String, Void, String> {
             socket = new DatagramSocket();
             socket.setBroadcast(true);
             DatagramPacket packet = new DatagramPacket(data_byte, data_byte.length, broadcastIP, serverPort);
-            for(int i = 0;i <= 4;i++){
+//	        socket.send(packet);
+            for(int i = 0;i < 10;i++){
                 socket.send(packet);
-                Thread.sleep(200);
-                Log.d("Auto Send","Send round : " + i);
+
+		            Thread.sleep(200);
+
+                //Log.d("Auto Send","Send round : " + i);
             }
             socket.close();
             return "Success";

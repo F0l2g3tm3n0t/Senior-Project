@@ -94,10 +94,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         setContentView(R.layout.activity_main);
 
         defaultOperation();
-        updateLocate();
+        //updateLocate();
         createDatabase();
         setUpAlarm();
-        receiveBroadcast_AlarmSignal();
+        //receiveBroadcast_AlarmSignal();
         welcomeUser();
 
         calendar = Calendar.getInstance();
