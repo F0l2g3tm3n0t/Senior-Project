@@ -55,7 +55,9 @@ public class TCP_Unicast_Receive extends AsyncTask<String, Void, String> {
 				//Log.d(log_Head + " - doInBackground","packet address : " + address.getHostAddress());
 				Log.d(log_Head + " - doInBackground","my address : " + myAddress);
 				Log.d(log_Head + " - doInBackground","message : " + msg);
+				input.close();
 				socket.close();
+				serverSocket.close();
 				if(myAddress.matches(address.getHostAddress())) {
 					Log.d(log_Head + " - doInBackground", "receive from myself");
 					return "Fail : MySelf";
@@ -68,8 +70,16 @@ public class TCP_Unicast_Receive extends AsyncTask<String, Void, String> {
 		}catch (Exception e){
 			Log.d("Exception",log_Head);
 			e.printStackTrace();
-			if(socket != null) try {
-				socket.close();
+			try {
+				if(input != null){
+					input.close();
+				}
+				if(socket != null){
+					socket.close();
+				}
+				if(serverSocket != null){
+					serverSocket.close();
+				}
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
