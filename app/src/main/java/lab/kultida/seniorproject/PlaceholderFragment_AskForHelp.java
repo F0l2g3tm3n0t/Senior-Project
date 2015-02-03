@@ -77,7 +77,8 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
                     data.put("fromPi", activity.getNetworkName());
                     data.put("user", activity.myUser);
                     data.put("phone", activity.myPhone);
-
+					data.put("lat", activity.latitude);
+	                data.put("long", activity.longitude);
                     data_frame.put("serverIP", serverIP);
                     data_frame.put("serverPort", serverPort);
                     data_frame.put("data", data);

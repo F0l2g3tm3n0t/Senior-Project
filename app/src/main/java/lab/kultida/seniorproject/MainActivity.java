@@ -244,11 +244,11 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 			data.put("signal", "updateLocate");
 			data.put("clientIP", InetAddress.getByName(getIPAddress(true)));
 			data.put("macaddress", getMacAddress());
-            data.put("macaddress", getMacAddress());
-            data.put("macaddress", getMacAddress());
             data.put("fromPi", getNetworkName());
             data.put("user", myUser);
             data.put("phone", myPhone);
+	        data.put("lat", latitude);
+	        data.put("long", longitude);
 
             data_frame.put("serverIP", serverIP);
             data_frame.put("serverPort", serverPort_UpdateLocate);

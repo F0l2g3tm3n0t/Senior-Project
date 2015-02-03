@@ -16,12 +16,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import lab.kultida.utility.TCP_Unicast_Receive;
-import lab.kultida.utility.TCP_Unicast_Send;
+import lab.kultida.utility.UDP_Broadcast_Auto_Send;
+import lab.kultida.utility.UDP_Broadcast_Receive;
 
 public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype {
 
@@ -101,9 +102,9 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 			e.printStackTrace();
 		}
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			new TCP_Unicast_Receive_ChatArea().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
+			new UDP_Broadcast_Receive_ChatArea().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
 		} else {
-			new TCP_Unicast_Receive_ChatArea().execute(data.toString());
+			new UDP_Broadcast_Receive_ChatArea().execute(data.toString());
 		}
 	}
 
@@ -148,9 +149,9 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 
 	public void addChatMessage(JSONObject data_frame){
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			new TCP_Unicast_Send_ChatArea().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
+			new UDP_Broadcast_Send_ChatArea().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
 		else
-			new TCP_Unicast_Send_ChatArea().execute(data_frame.toString());
+			new UDP_Broadcast_Send_ChatArea().execute(data_frame.toString());
 
 		adapter.addChatMessage(data_frame);
 		adapter.notifyDataSetChanged();
@@ -159,25 +160,25 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 
 
 	//  <<--------------------------  ASYNCTASK OPERATION  ------------------------->>
-	protected class TCP_Unicast_Send_ChatArea extends TCP_Unicast_Send {
 
+	private class UDP_Broadcast_Send_ChatArea extends UDP_Broadcast_Auto_Send {
 		@Override
 		protected void onPreExecute() {
-			log_Head = "TCP_Unicast_Send_ChatArea";
+			log_Head = "UDP_Broadcast_Send_ChatArea";
+			try {
+				broadcastIP = InetAddress.getByName("192.168.42.255");
+			} catch (Exception e){}
 			super.onPreExecute();
 		}
 
 		@Override
-		protected void onPostExecute(String result) {
-
-		}
+		protected void onPostExecute(String result) {}
 	}
 
-	protected class TCP_Unicast_Receive_ChatArea extends TCP_Unicast_Receive {
-
+	private class UDP_Broadcast_Receive_ChatArea extends UDP_Broadcast_Receive {
 		@Override
 		protected void onPreExecute() {
-			log_Head = "TCP_Unicast_Receive_ChatArea";
+			log_Head = "UDP_Broadcast_Receive_ChatArea";
 			myAddress = activity.getIPAddress(true);
 			super.onPreExecute();
 		}
@@ -193,14 +194,15 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 					data_frame.put("fromMe",false);
 
 					String value[] = {data.getString("user"),data.getString("message"),data.getString("date"),data.getString("time"),data_frame.getString("fromMe")};
-					//database.insertData(database.getTABLE_ChatArea(),database.getTable_ChatArea_Column(),value);
+
+					if(chatarea_alreadyopen){
+						adapter.addChatMessage(data_frame);
+						adapter.notifyDataSetChanged();
+						listView_Chatarea.setSelection(adapter.getCount() - 1);
+					}
+					//database.insertData(database.getTABLE_ChatRoom(),database.getTable_ChatRoom_Column(),value);
 				} catch (JSONException e) {
 					e.printStackTrace();
-				}
-				if(chatarea_alreadyopen){
-					adapter.addChatMessage(data_frame);
-					adapter.notifyDataSetChanged();
-					listView_Chatarea.setSelection(adapter.getCount() - 1);
 				}
 			}
 
@@ -208,4 +210,54 @@ public class PlaceholderFragment_ChatArea extends PlaceholderFragment_Prototype 
 			receiveBroadcast_Chatarea();
 		}
 	}
+
+//	protected class TCP_Unicast_Send_ChatArea extends TCP_Unicast_Send {
+//
+//		@Override
+//		protected void onPreExecute() {
+//			log_Head = "TCP_Unicast_Send_ChatArea";
+//			super.onPreExecute();
+//		}
+//
+//		@Override
+//		protected void onPostExecute(String result) {
+//
+//		}
+//	}
+//
+//	protected class TCP_Unicast_Receive_ChatArea extends TCP_Unicast_Receive {
+//
+//		@Override
+//		protected void onPreExecute() {
+//			log_Head = "TCP_Unicast_Receive_ChatArea";
+//			myAddress = activity.getIPAddress(true);
+//			super.onPreExecute();
+//		}
+//
+//		@Override
+//		protected void onPostExecute(String result) {
+//			if(!result.contains("Fail")){
+//				JSONObject data_frame = null;
+//				try {
+//					JSONObject data = new JSONObject(result);
+//					data_frame = new JSONObject();
+//					data_frame.put("data",data);
+//					data_frame.put("fromMe",false);
+//
+//					String value[] = {data.getString("user"),data.getString("message"),data.getString("date"),data.getString("time"),data_frame.getString("fromMe")};
+//					//database.insertData(database.getTABLE_ChatArea(),database.getTable_ChatArea_Column(),value);
+//				} catch (JSONException e) {
+//					e.printStackTrace();
+//				}
+//				if(chatarea_alreadyopen){
+//					adapter.addChatMessage(data_frame);
+//					adapter.notifyDataSetChanged();
+//					listView_Chatarea.setSelection(adapter.getCount() - 1);
+//				}
+//			}
+//
+//			//Start Server Again
+//			receiveBroadcast_Chatarea();
+//		}
+//	}
 }
