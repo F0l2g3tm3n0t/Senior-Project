@@ -123,7 +123,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 public void onLocationUpdate(Location location, BestLocationProvider.LocationType type, boolean isFresh) {
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();
-                    Log.d("GPSHelper - onLocationChanged","\nDate : " + date.format(calendar.getTime())
+                    Log.d("GPSHelper-onLocationChg","\nDate : " + date.format(calendar.getTime())
                             + "\nTime : " + time.format(calendar.getTime())
                             + "\nLatitude : " + latitude
                             + "\nLongitude : " + longitude
@@ -257,7 +257,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 			e.printStackTrace();
 		}
 
-        Log.d("MainActivity - updateLocate()","TCP_Unicast_Send_UpdateLocation().execute(data_frame.toString()");
+        Log.d("MainActivity-updateLoc","TCP_Unicast_Send_UpdateLocation().execute(data_frame.toString()");
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			new TCP_Unicast_Send_UpdateLocation().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data_frame.toString());
 		} else {
@@ -333,7 +333,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
 
 
-        Log.d("MainActivity - checkIPAndServerConnection()", "TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
+        Log.d("MainActivity-checkIP+Sr", "TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
         new TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString());
 
     }
@@ -378,7 +378,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                     (ip >> 8 & 0xff),
                     (ip >> 16 & 0xff),
                     (ip >> 24 & 0xff));
-            Log.d("MainAcitivity - getIPAddress","IP Address : " + ipString);
+            Log.d("MainAcitivity-getIPAddr","IP Address : " + ipString);
             return ipString;
         } catch (Exception e) {
             e.printStackTrace();
