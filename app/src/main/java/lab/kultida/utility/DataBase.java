@@ -27,7 +27,6 @@ public class DataBase extends SQLiteOpenHelper{
     private final String TABLE_ChatRoom_Date = "date";
     private final String TABLE_ChatRoom_Time = "time";
     private final String TABLE_ChatRoom_FromMe = "fromMe";
-    private final String TABLE_ChatRoom_SeqNum = "seqNum";
 
 	private final String TABLE_ChatArea = "CHATAREA";
 	private final String TABLE_ChatArea_User = "user";
@@ -35,7 +34,6 @@ public class DataBase extends SQLiteOpenHelper{
 	private final String TABLE_ChatArea_Date = "date";
 	private final String TABLE_ChatArea_Time = "time";
 	private final String TABLE_ChatArea_FromMe = "fromMe";
-    private final String TABLE_ChatArea_SeqNum = "seqNum";
 
     private final String TABLE_User = "USER";
     private final String TABLE_User_Name = "name";
@@ -58,8 +56,7 @@ public class DataBase extends SQLiteOpenHelper{
                         TABLE_ChatRoom_Message + " TEXT, " +
                         TABLE_ChatRoom_Date + " TEXT," +
                         TABLE_ChatRoom_Time + " TEXT," +
-                        TABLE_ChatRoom_FromMe + "   ," +
-                        TABLE_ChatRoom_SeqNum + "INT" +
+                        TABLE_ChatRoom_FromMe + "   " +
                         ");" +
 		        "CREATE TABLE " + TABLE_ChatArea +
 				        "(" +
@@ -68,7 +65,6 @@ public class DataBase extends SQLiteOpenHelper{
 				        TABLE_ChatArea_Date + " TEXT," +
 				        TABLE_ChatArea_Time + " TEXT," +
 				        TABLE_ChatArea_FromMe + "   " +
-                        TABLE_ChatArea_SeqNum + "INT" +
 				        ");"
         );
 
@@ -131,8 +127,10 @@ public class DataBase extends SQLiteOpenHelper{
     }
 
     public JSONArray selectAllDataChatroom(String[] OrderBy){
+        Log.d("Database-SelectAllData","Select All Data Chatroom1");
         SQLiteDatabase db = null;
         Cursor cursor = null;
+        Log.d("Database-SelectAllData","Select All Data Chatroom2");
         try {
             String strSQL = "";
             if(OrderBy != null){
@@ -149,7 +147,7 @@ public class DataBase extends SQLiteOpenHelper{
                 strSQL = "SELECT  * FROM " + TABLE_ChatRoom;
             }
 
-            Log.d("Database - SelectAllData","SQL LITE : " + strSQL);
+            Log.d("Database-SelectAllData","SQL LITE : " + strSQL);
             db = this.getReadableDatabase();
             cursor = db.rawQuery(strSQL, null);
             JSONArray data_frame_array = null;
@@ -164,7 +162,6 @@ public class DataBase extends SQLiteOpenHelper{
                         data.put("date",cursor.getString(2));
                         data.put("time",cursor.getString(3));
                         data_frame.put("fromMe",cursor.getString(4));
-                        data_frame.put("seqNum",cursor.getString(5));
                         data_frame.put("data",data);
                         MyArrJson.add(data_frame);
                     } while (cursor.moveToNext());
@@ -200,7 +197,7 @@ public class DataBase extends SQLiteOpenHelper{
 				strSQL = "SELECT  * FROM " + TABLE_ChatArea;
 			}
 
-			Log.d("Database - SelectAllData","SQL LITE : " + strSQL);
+			Log.d("Database-SelectAllData","SQL LITE : " + strSQL);
 			db = this.getReadableDatabase();
 			cursor = db.rawQuery(strSQL, null);
 			JSONArray data_frame_array = null;
@@ -237,7 +234,7 @@ public class DataBase extends SQLiteOpenHelper{
         Cursor cursor = null;
         try {
             String strSQL = "SELECT  * FROM " + TABLE_User;
-            Log.d("Database - SelectAllData","SQL LITE : " + strSQL);
+            Log.d("Database-SelectAllData","SQL LITE : " + strSQL);
             db = this.getReadableDatabase();
             cursor = db.rawQuery(strSQL, null);
             ArrayList<String> MyArrJson = new ArrayList<>();
@@ -263,7 +260,7 @@ public class DataBase extends SQLiteOpenHelper{
         Cursor cursor = null;
         try {
             String strSQL = "SELECT  * FROM " + TABLE_Phone;
-            Log.d("Database - SelectAllData","SQL LITE : " + strSQL);
+            Log.d("Database-SelectAllData","SQL LITE : " + strSQL);
             db = this.getReadableDatabase();
             cursor = db.rawQuery(strSQL, null);
             ArrayList<String> MyArrJson = new ArrayList<>();
@@ -315,7 +312,7 @@ public class DataBase extends SQLiteOpenHelper{
         SQLiteDatabase db = null;
         try {
             String strSQL = "DELETE FROM " + TABLE_NAME;
-            Log.d("Database - DeleteAllData","SQL LITE : " + strSQL);
+            Log.d("Database-DeleteAllData","SQL LITE : " + strSQL);
             db = this.getWritableDatabase();
             SQLiteStatement insertCmd = db.compileStatement(strSQL);
             insertCmd.executeUpdateDelete();

@@ -4,7 +4,6 @@ package lab.kultida.seniorproject;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import lab.kultida.utility.UDP_Broadcast_Auto_Send;
 import lab.kultida.utility.UDP_Broadcast_Receive;
+import lab.kultida.utility.UDP_Broadcast_Send;
 
 public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype {
     protected ListView listView_Chatroom;
@@ -48,7 +47,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         getComponent();
         createChat();
         createTime();
-        //pullDataFromDatabase();
+        pullDataFromDatabase();
 //        receiveBroadcast_Chatroom();
         chatroom_alreadyopen = true;
 
@@ -56,16 +55,16 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
     }
 
     protected void pullDataFromDatabase(){
-        JSONArray data_frame_array = database.selectAllDataChatroom(new String[]{database.getTABLE_ChatRoom_Date(),database.getTABLE_ChatRoom_Time()});
-        Log.d("pullDataFromDatabase()","data_frame_array : " + data_frame_array.toString());
         try {
+            JSONArray data_frame_array = database.selectAllDataChatroom(new String[]{database.getTABLE_ChatRoom_Date(),database.getTABLE_ChatRoom_Time()});
+//            Log.d("pullDataFromDatabase()", "data_frame_array : " + data_frame_array.toString());
             for(int i = 0;i < data_frame_array.length();i++){
                 JSONObject data_frame = data_frame_array.getJSONObject(i);
                 adapter.addChatMessage(data_frame);
                 adapter.notifyDataSetChanged();
                 listView_Chatroom.setSelection(adapter.getCount() - 1);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -77,11 +76,6 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-//	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//		    new TCP_Unicast_Received_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
-//	    } else {
-//		    new TCP_Unicast_Received_ChatRoom().execute(data.toString());
-//	    }
 	    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 		    new UDP_Broadcast_Receive_ChatRoom().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, data.toString());
 	    } else {
@@ -146,7 +140,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 
                     String value[] = {data.getString("user"),data.getString("message"),data.getString("date"),data.getString("time"),data_frame.getString("fromMe")};
                     addChatMessage(data_frame);
-//                    database.insertData(database.getTABLE_ChatRoom(),database.getTable_ChatRoom_Column(),value);
+                    database.insertData(database.getTABLE_ChatRoom(),database.getTable_ChatRoom_Column(),value);
 	            } catch (JSONException e) {
 		            e.printStackTrace();
 	            }
@@ -175,7 +169,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
 
 //  <<--------------------------  ASYNCTASK OPERATION  ------------------------->>
 
-    private class UDP_Broadcast_Send_ChatRoom extends UDP_Broadcast_Auto_Send {
+    private class UDP_Broadcast_Send_ChatRoom extends UDP_Broadcast_Send {
         @Override
         protected void onPreExecute() {
             log_Head = "UDP_Broadcast_Send_ChatRoom";
@@ -214,7 +208,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
                         adapter.notifyDataSetChanged();
                         listView_Chatroom.setSelection(adapter.getCount() - 1);
                     }
-                    //database.insertData(database.getTABLE_ChatRoom(),database.getTable_ChatRoom_Column(),value);
+                    database.insertData(database.getTABLE_ChatRoom(),database.getTable_ChatRoom_Column(),value);
                 } catch (JSONException e) {
 					e.printStackTrace();
 				}

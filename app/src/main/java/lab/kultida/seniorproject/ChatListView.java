@@ -52,7 +52,7 @@ public class ChatListView extends ArrayAdapter<String>{
             message.add(data.getString("message"));
             time.add(data.getString("time"));
             date.add(data.getString("date"));
-            Log.d("ChatListView - addChatMessage","data_frame = " + data_frame.toString());
+            Log.d("ChatList-addChatMessage","data_frame = " + data_frame.toString());
         }catch (Exception e){
             e.printStackTrace();
         }

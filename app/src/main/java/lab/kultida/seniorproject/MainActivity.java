@@ -94,10 +94,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         setContentView(R.layout.activity_main);
 
         defaultOperation();
-        //updateLocate();
+        updateLocate();
         createDatabase();
         setUpAlarm();
-        //receiveBroadcast_AlarmSignal();
+        receiveBroadcast_AlarmSignal();
         welcomeUser();
 
         calendar = Calendar.getInstance();
@@ -402,14 +402,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         return info.getMacAddress();
     }
 
-    protected String getPhoneNumber(){
-//        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-//        String phoneNumber = tm.getLine1Number();
-//        Log.d("phoneNumber2",phoneNumber);
-//        return phoneNumber;
-        return "phone number";
-    }
-
     /*Connect To WIFI*/
     //TODO What r u doing
     protected void connectToWifi(final String networkSSID){
@@ -612,6 +604,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                     database.delelteAllData(database.getTABLE_ChatRoom());
                     fragment_chatRoom.adapter.clear();
                     fragment_chatRoom.adapter.notifyDataSetChanged();
+                    fragment_chatRoom.createChat();
                 }
                 else Toast.makeText(this,"Please switch page to chat room before use this operation",Toast.LENGTH_SHORT).show();
                 break;

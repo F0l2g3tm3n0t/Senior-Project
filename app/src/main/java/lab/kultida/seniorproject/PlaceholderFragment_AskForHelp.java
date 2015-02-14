@@ -86,7 +86,7 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
                     e.printStackTrace();
                 }
 
-                Log.d("Placeholder_AskForHelp - Click()", "TCP_Unicast_Send_AskForHelp()execute(data_frame.toString()");
+                Log.d("AskForHelp-Click()", "TCP_Unicast_Send_AskForHelp()execute(data_frame.toString()");
 	            new TCP_Unicast_Send_AskForHelp().execute(data_frame.toString());
                 break;
         }
