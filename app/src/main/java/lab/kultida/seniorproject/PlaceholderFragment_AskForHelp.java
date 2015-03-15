@@ -92,6 +92,7 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
         }
     }
 
+
 //  <<--------------------------  ASYNCTASK OPERATION  ------------------------->>
 	protected class TCP_Unicast_Send_AskForHelp extends TCP_Unicast_Send {
 

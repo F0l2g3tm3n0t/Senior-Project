@@ -4,10 +4,8 @@
     <string name="app_name">Disaster Victim</string>
     <string name="DummyPacketSimulator">DummyPacketSimulator</string>
     <string name="title_activity_ask_for_help">AskForHelpActivity</string>
-    <string name="title_section1">Home</string>
-    <string name="title_section2">Ask For Help</string>
-    <string name="title_section3">Chat Room</string>
-    <string name="title_section4">Chat Area</string>
+    <string name="title_section1">Ask For Help</string>
+    <string name="title_section2">Chat Room</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_main">MainActivity</string>
