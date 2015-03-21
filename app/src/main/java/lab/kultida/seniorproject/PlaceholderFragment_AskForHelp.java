@@ -66,7 +66,7 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
                             macAddress
                             fromPI
                 */
-
+                if(activity.mBestLocationProvider == null || activity.mBestLocationListener == null) activity.initLocation();
                 JSONObject data = new JSONObject();
                 JSONObject data_frame = new JSONObject();
                 try {

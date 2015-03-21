@@ -19,6 +19,7 @@ public class UDP_Broadcast_Receive extends AsyncTask<String, Void, String> {
     protected InetAddress address;
     protected String msg;
 
+
     @Override
     protected void onPreExecute() {
         // log_Head
@@ -37,7 +38,7 @@ public class UDP_Broadcast_Receive extends AsyncTask<String, Void, String> {
 
             // open socket
             Log.d(log_Head + " - doInBackground","open socket");
-            socket = new DatagramSocket(22220);
+            socket = new DatagramSocket(data_frame.getInt("serverPort"));
             socket.setBroadcast(true);
 			while(true){
 				// receive packet

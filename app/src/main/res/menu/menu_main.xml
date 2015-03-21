@@ -39,4 +39,10 @@
         android:orderInCategory="6"
         android:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_rescued"
+        android:title="Rescued"
+        android:orderInCategory="7"
+        android:showAsAction="ifRoom" />
+
 </menu>

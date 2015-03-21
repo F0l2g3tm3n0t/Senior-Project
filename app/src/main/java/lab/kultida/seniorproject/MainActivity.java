@@ -108,18 +108,31 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         fragment_chatRoom.database = database;
         fragment_chatRoom.receiveBroadcast_Chatroom();
 
-	    fragment_chatArea.activity = this;
-	    fragment_chatArea.database = database;
-	    fragment_chatArea.receiveBroadcast_Chatarea();
+//	    fragment_chatArea.activity = this;
+//	    fragment_chatArea.database = database;
+//	    fragment_chatArea.receiveBroadcast_Chatarea();
     }
 
     public void initLocation(){
+        Log.d("initLocation","start initlocation");
         if(mBestLocationListener == null){
+            Log.d("initLocation","mBestLocationListener == null");
             mBestLocationListener = new BestLocationListener() {
-                public void onStatusChanged(String provider, int status, Bundle extras) { }
-                public void onProviderEnabled(String provider) { }
-                public void onProviderDisabled(String provider) { }
-                public void onLocationUpdateTimeoutExceeded(BestLocationProvider.LocationType type) { }
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                    Log.i(TAG, "onStatusChanged PROVIDER:" + provider + " STATUS:" + String.valueOf(status));
+                }
+                @Override
+                public void onProviderEnabled(String provider) {
+                    Log.i(TAG, "onProviderEnabled PROVIDER:" + provider);
+                }
+                @Override
+                public void onProviderDisabled(String provider) {
+                    Log.i(TAG, "onProviderDisabled PROVIDER:" + provider);
+                }
+                public void onLocationUpdateTimeoutExceeded(BestLocationProvider.LocationType type) {
+                    Log.w(TAG, "onLocationUpdateTimeoutExceeded PROVIDER:" + type);
+                }
                 public void onLocationUpdate(Location location, BestLocationProvider.LocationType type, boolean isFresh) {
                     latitude = location.getLatitude();
                     longitude = location.getLongitude();
@@ -135,6 +148,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             };
 
             if(mBestLocationProvider == null){
+                Log.d("initLocation","mBestLocationProvider == null");
                 mBestLocationProvider = new BestLocationProvider(this, true, true, 10000, 1000, 15000, 0);
             }
         }
@@ -236,16 +250,20 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     }
 
 	protected void updateLocate(){
+        if(mBestLocationProvider == null || mBestLocationListener == null) initLocation();
+
         JSONObject data = new JSONObject();
 		JSONObject data_frame = new JSONObject();
         try {
             data.put("annotation", "");
 			data.put("signal", "updateLocate");
+            data.put("serverIP", serverIP);
 			data.put("clientIP", InetAddress.getByName(getIPAddress(true)));
 			data.put("macaddress", getMacAddress());
             data.put("fromPi", getNetworkName());
             data.put("user", myUser);
             data.put("phone", myPhone);
+            Toast.makeText(this,"(" + latitude + "," + longitude + ")",Toast.LENGTH_SHORT).show();
 	        data.put("lat", latitude);
 	        data.put("long", longitude);
 
@@ -404,10 +422,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     /*Connect To WIFI*/
     //TODO What r u doing
     protected void connectToWifi(final String networkSSID){
-        setSupportProgressBarIndeterminateVisibility(true);
 //        String networkPass = "";
-        WifiConfiguration conf = new WifiConfiguration();
-        conf.SSID = "\"" + networkSSID + "\"";
+//        WifiConfiguration conf = new WifiConfiguration();
+        //conf.SSID = "\"" + networkSSID + "\"";
 
         //For WEP authen
 		/*
@@ -423,7 +440,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 		*/
 
         //For Open network
-        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+        //conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 
         //Check current WIFI
         WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
@@ -436,13 +453,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             }
         }
 
-//	    List<ScanResult> temp = wifiManager.getScanResults();
-//		for(int z = 0; z < temp.size(); z++){
-//			Log.d("Wifi List" + z, temp.get(z).SSID.toString() + ", " + temp.get(z).level);
-//		}
-
         //Add config to Wifi Manager
-	    wifiManager.addNetwork(conf);
+//	    wifiManager.addNetwork(conf);
 
         //enable Wifi
         while(!wifiManager.isWifiEnabled()){
@@ -452,12 +464,19 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
         for( WifiConfiguration i : list ) {
             if(i.SSID != null && i.SSID.contains("" + networkSSID + "")) {
+                WifiConfiguration conf = new WifiConfiguration();
+                conf.SSID = i.SSID;
+                conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+                wifiManager.addNetwork(conf);
+
                 wifiManager.disconnect();
                 wifiManager.enableNetwork(i.networkId, true);
                 wifiManager.reconnect();
+
                 while(true){
                     if (wifiManager.getConnectionInfo().getSSID().contains(networkSSID)) break;
                 }
+
                 AlertDialog.Builder adb_ConnectWIFI = new AlertDialog.Builder(this);
                 adb_ConnectWIFI.setTitle("Connect WIFI");
                 adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " complete" + "\nThis device will connect to Rescue's WIFI in few second");
@@ -469,7 +488,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                     }
                 });
                 adb_ConnectWIFI.show();
-                setSupportProgressBarIndeterminateVisibility(false);
                 return;
             }
         }
@@ -572,7 +590,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 checkServerConnection();
                 break;
             case R.id.connectWifi :
-                connectToWifi("My_AP_Pi");
+                connectToWifi("MY_AP_Pi");
                 break;
             case R.id.action_getJSONData :
                 getJSONData();
@@ -594,9 +612,42 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 }
                 else Toast.makeText(this,"Please switch page to chat room before use this operation",Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.action_rescued :
+                AlertDialog.Builder adb_ConfirmRescuedSignal = new AlertDialog.Builder(this);
+                adb_ConfirmRescuedSignal.setTitle("Confirm this victim is rescued");
+                adb_ConfirmRescuedSignal.setMessage("Confirm this victim is rescued");
+                adb_ConfirmRescuedSignal.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                       sendRescuedSignal();
+                    }
+                });
+                adb_ConfirmRescuedSignal.setPositiveButton("Cancel", null);
+                adb_ConfirmRescuedSignal.show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    protected void sendRescuedSignal(){
+        JSONObject data = new JSONObject();
+        JSONObject data_frame = new JSONObject();
+
+        try {
+            data.put("annotation", "");
+            data.put("signal", "rescued");
+            data.put("clientIP", "");
+            data.put("macaddress", getMacAddress());
+            data.put("fromPi", "");
+
+            data_frame.put("serverIP", serverIP);
+            data_frame.put("serverPort", serverPort_UpdateLocate);
+            data_frame.put("data", data);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        return super.onOptionsItemSelected(item);
+        Log.d("MainActivity-checkIP+Sr", "TCP_Unicast_Send_CheckServerConnection().execute(data_frame.toString()");
+        new TCP_Unicast_Send_Rescued().execute(data_frame.toString());
     }
 
     //  <<--------------------------  ASYNCTASK OPERATION  ------------------------->>
@@ -714,6 +765,34 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         protected void onPostExecute(String result) {
             AlertDialog.Builder adb_CheckIp = new AlertDialog.Builder(MainActivity.this);
             adb_CheckIp.setTitle("Check Server Connection");
+            adb_CheckIp.setMessage("Server Connection : " + result);
+            adb_CheckIp.setPositiveButton("OK", null);
+            adb_CheckIp.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    setSupportProgressBarIndeterminateVisibility(false);
+                    checkServerConnection();
+                }
+            });
+            adb_CheckIp.show();
+            setSupportProgressBarIndeterminateVisibility(false);
+        }
+    }
+
+    protected class TCP_Unicast_Send_Rescued extends TCP_Unicast_Send {
+
+        @Override
+        protected void onPreExecute() {
+            log_Head = "TCP_Unicast_Send_Rescued";
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            AlertDialog.Builder adb_CheckIp = new AlertDialog.Builder(MainActivity.this);
+            adb_CheckIp.setTitle("Check Server Connection");
+            if(result.contains("Success")) adb_CheckIp.setMessage("Server Connection : Connected");
+            else adb_CheckIp.setMessage("Server Connection : Fail \nplease check this device connect to My_AP Wifi");
             adb_CheckIp.setMessage("Server Connection : " + result);
             adb_CheckIp.setPositiveButton("OK", null);
             adb_CheckIp.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
