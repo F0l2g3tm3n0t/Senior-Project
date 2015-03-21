@@ -92,6 +92,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         createFragment();
         setContentView(R.layout.activity_main);
 
+        calendar = Calendar.getInstance();
+        time = new SimpleDateFormat("HH:mm");
+        date = new SimpleDateFormat("dd-MM-yyyy");
+
         defaultOperation();
         initLocation();
         updateLocate();
@@ -99,10 +103,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         setUpAlarm();
         receiveBroadcast_AlarmSignal();
         welcomeUser();
-
-        calendar = Calendar.getInstance();
-        time = new SimpleDateFormat("HH:mm");
-        date = new SimpleDateFormat("dd-MM-yyyy");
 
         fragment_chatRoom.activity = this;
         fragment_chatRoom.database = database;
@@ -120,18 +120,18 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             mBestLocationListener = new BestLocationListener() {
                 @Override
                 public void onStatusChanged(String provider, int status, Bundle extras) {
-                    Log.i(TAG, "onStatusChanged PROVIDER:" + provider + " STATUS:" + String.valueOf(status));
+                    Log.i("location", "onStatusChanged PROVIDER:" + provider + " STATUS:" + String.valueOf(status));
                 }
                 @Override
                 public void onProviderEnabled(String provider) {
-                    Log.i(TAG, "onProviderEnabled PROVIDER:" + provider);
+                    Log.i("location", "onProviderEnabled PROVIDER:" + provider);
                 }
                 @Override
                 public void onProviderDisabled(String provider) {
-                    Log.i(TAG, "onProviderDisabled PROVIDER:" + provider);
+                    Log.i("location", "onProviderDisabled PROVIDER:" + provider);
                 }
                 public void onLocationUpdateTimeoutExceeded(BestLocationProvider.LocationType type) {
-                    Log.w(TAG, "onLocationUpdateTimeoutExceeded PROVIDER:" + type);
+                    Log.w("location", "onLocationUpdateTimeoutExceeded PROVIDER:" + type);
                 }
                 public void onLocationUpdate(Location location, BestLocationProvider.LocationType type, boolean isFresh) {
                     latitude = location.getLatitude();
@@ -149,7 +149,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
             if(mBestLocationProvider == null){
                 Log.d("initLocation","mBestLocationProvider == null");
-                mBestLocationProvider = new BestLocationProvider(this, true, true, 10000, 1000, 15000, 0);
+                mBestLocationProvider = new BestLocationProvider(this, true, true, 10000, 1000, 2, 0);
+//                mBestLocationProvider = new BestLocationProvider(this, true, true, 10000, 1000, 15000, 0);
+                mBestLocationProvider.startLocationUpdatesWithListener(mBestLocationListener);
             }
         }
     }
