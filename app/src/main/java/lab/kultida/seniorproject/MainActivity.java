@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -421,28 +422,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         return info.getMacAddress();
     }
 
-    /*Connect To WIFI*/
-    //TODO What r u doing
     protected void connectToWifi(final String networkSSID){
-//        String networkPass = "";
-//        WifiConfiguration conf = new WifiConfiguration();
-        //conf.SSID = "\"" + networkSSID + "\"";
-
-        //For WEP authen
-		/*
-		conf.wepKeys[0] = "\"" + networkPass + "\"";
-		conf.wepTxKeyIndex = 0;
-		conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-		conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-		*/
-
-        //For WPA authen
-		/*
-		conf.preSharedKey = "\""+ networkPass +"\"";
-		*/
-
-        //For Open network
-        //conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+        Log.d("connect WIFI",networkSSID);
 
         //Check current WIFI
         WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
@@ -455,25 +436,24 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             }
         }
 
-        //Add config to Wifi Manager
-//	    wifiManager.addNetwork(conf);
-
         //enable Wifi
         while(!wifiManager.isWifiEnabled()){
             wifiManager.setWifiEnabled(true);
         }
 
-        List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
-        for( WifiConfiguration i : list ) {
-            if(i.SSID != null && i.SSID.contains("" + networkSSID + "")) {
-                WifiConfiguration conf = new WifiConfiguration();
-                conf.SSID = i.SSID;
-                conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-                wifiManager.addNetwork(conf);
+        List<ScanResult> temp = wifiManager.getScanResults();
+        for(int z = 0; z < temp.size(); z++) {
+            String wifiName = temp.get(z).SSID;
+            if (wifiName.contains("My_AP_Pi") || wifiName.contains("MY_AP_Pi")) {
+                WifiConfiguration wifiConfig = new WifiConfiguration();
+                wifiConfig.SSID = String.format("\"%s\"", wifiName);
+                wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 
-                wifiManager.disconnect();
-                wifiManager.enableNetwork(i.networkId, true);
-                wifiManager.reconnect();
+                WifiManager wifiManager3 = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+                int netId = wifiManager3.addNetwork(wifiConfig);
+                wifiManager3.disconnect();
+                wifiManager3.enableNetwork(netId, true);
+                wifiManager3.reconnect();
 
                 while(true){
                     if (wifiManager.getConnectionInfo().getSSID().contains(networkSSID)) break;
@@ -483,12 +463,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 adb_ConnectWIFI.setTitle("Connect WIFI");
                 adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " complete" + "\nThis device will connect to Rescue's WIFI in few second");
                 adb_ConnectWIFI.setPositiveButton("Ok", null);
-                adb_ConnectWIFI.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        connectToWifi(networkSSID);
-                    }
-                });
                 adb_ConnectWIFI.show();
                 return;
             }
@@ -498,6 +472,12 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         adb_ConnectWIFI.setTitle("Connect WIFI");
         adb_ConnectWIFI.setMessage("Connect WIFI : " + networkSSID + " fail");
         adb_ConnectWIFI.setPositiveButton("Ok", null);
+        adb_ConnectWIFI.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                connectToWifi(networkSSID);
+            }
+        });
         adb_ConnectWIFI.show();
         setSupportProgressBarIndeterminateVisibility(false);
     }
