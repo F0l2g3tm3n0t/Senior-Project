@@ -6,8 +6,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
+import android.media.SoundPool;
 import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
@@ -85,6 +87,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected SimpleDateFormat date;
     protected Double latitude,longitude;
 
+    protected MediaPlayer mPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -234,8 +237,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected void createDatabase(){
         database = new DataBase(this); //start class DB
         database.getWritableDatabase(); // start create database and table
-
-
     }
 
     protected void receiveBroadcast_AlarmSignal(){
@@ -304,6 +305,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         ringtone = RingtoneManager.getRingtone(getApplicationContext(), notification);
         audioManager = (AudioManager)getSystemService(AUDIO_SERVICE);
         streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
+
+        mPlayer = MediaPlayer.create(this, R.raw.apple_ring); // in 2nd param u have to pass your desire ringtone
     }
 
     protected void alarmPlay(){
@@ -314,7 +317,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     }
 
     protected void alarmStop(){
-        audioManager.setStreamVolume(AudioManager.STREAM_RING, streamMaxVolume, AudioManager.FLAG_ALLOW_RINGER_MODES|AudioManager.FLAG_PLAY_SOUND);
+        audioManager.setStreamVolume(AudioManager.STREAM_RING, streamMaxVolume, AudioManager.FLAG_ALLOW_RINGER_MODES | AudioManager.FLAG_PLAY_SOUND);
         if(ringtone != null){
             ringtone.stop();
         }
@@ -499,7 +502,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             if ( lastFragment != null ) {
                 transaction.hide( lastFragment );
             }
-            Log.d("hide last tag",lastTag);
+            Log.d("hide last tag", lastTag);
         }
 
         Fragment temp;
@@ -578,11 +581,28 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 getJSONData();
                 break;
             case R.id.action_testAlarm :
-                if(ringtone.isPlaying()) {
-                    alarmStop();
-                }else{
-                    alarmPlay();
+                try{
+                    if(ringtone.isPlaying()) {
+                        alarmStop();
+                    }else{
+                        alarmPlay();
+                    }
+                }catch (Exception e){
+                    if(mPlayer.isPlaying()) mPlayer.stop();
+                    else{
+                        audioManager = (AudioManager)getSystemService(AUDIO_SERVICE);
+                        audioManager.setStreamVolume(AudioManager.STREAM_RING, streamMaxVolume, AudioManager.FLAG_ALLOW_RINGER_MODES | AudioManager.FLAG_PLAY_SOUND);
+                        SoundPool sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+                        /** soundId for Later handling of sound pool **/
+                        int soundId = sp.load(this, R.raw.apple_ring, 1); // in 2nd param u have to pass your desire ringtone
+                        sp.play(soundId, 1, 1, 0, 0, 1);
+                        streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
+                        mPlayer.start();
+                        //mPlayer.prepare();
+                    }
+                     e.printStackTrace();
                 }
+
                 break;
             case R.id.action_clearChat :
                 if(mTitle.toString().matches("Chat Room")) {
@@ -771,21 +791,19 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
         @Override
         protected void onPostExecute(String result) {
-            AlertDialog.Builder adb_CheckIp = new AlertDialog.Builder(MainActivity.this);
-            adb_CheckIp.setTitle("Check Server Connection");
-            if(result.contains("Success")) adb_CheckIp.setMessage("Server Connection : Connected");
-            else adb_CheckIp.setMessage("Server Connection : Fail \nplease check this device connect to My_AP Wifi");
-            adb_CheckIp.setMessage("Server Connection : " + result);
-            adb_CheckIp.setPositiveButton("OK", null);
-            adb_CheckIp.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    setSupportProgressBarIndeterminateVisibility(false);
-                    checkServerConnection();
-                }
-            });
-            adb_CheckIp.show();
-            setSupportProgressBarIndeterminateVisibility(false);
+            AlertDialog.Builder adb_SendRescuedSignal = new AlertDialog.Builder(MainActivity.this);
+            adb_SendRescuedSignal.setTitle("Send Rescued Signal to Server");
+            adb_SendRescuedSignal.setMessage("Result : " + result);
+            adb_SendRescuedSignal.setPositiveButton("OK", null);
+            if(result.contains("Fail")){
+                adb_SendRescuedSignal.setNegativeButton("Try Again", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendRescuedSignal();
+                    }
+                });
+            }
+            adb_SendRescuedSignal.show();
         }
     }
 
@@ -804,14 +822,34 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 try {
                     JSONObject data = new JSONObject(result);
                     if(data.getString("alarm").matches("alarm signal")){
-                        if(!ringtone.isPlaying()){
-                            AlertDialog.Builder adb_Alarm = new AlertDialog.Builder(MainActivity.this);
-                            adb_Alarm.setTitle("Rescue Team are here");
-                            adb_Alarm.setMessage("Rescue Team are here \nWe are searching you so do not turn off alarm");
-                            adb_Alarm.setPositiveButton("OK", null);
-                            adb_Alarm.show();
+                        try{
+                            if(ringtone.isPlaying()) {
+                                alarmStop();
+                            }else{
+                                alarmPlay();
+                            }
+                        }catch (Exception e){
+                            if(mPlayer.isPlaying()) mPlayer.stop();
+                            else{
+                                AlertDialog.Builder adb_Alarm = new AlertDialog.Builder(MainActivity.this);
+                                adb_Alarm.setTitle("Rescue Team are here");
+                                adb_Alarm.setMessage("Rescue Team are here \nWe are searching you so do not turn off alarm");
+                                adb_Alarm.setPositiveButton("OK", null);
+                                adb_Alarm.show();
+
+                                audioManager = (AudioManager)getSystemService(AUDIO_SERVICE);
+                                audioManager.setStreamVolume(AudioManager.STREAM_RING, streamMaxVolume, AudioManager.FLAG_ALLOW_RINGER_MODES | AudioManager.FLAG_PLAY_SOUND);
+                                SoundPool sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+                                /** soundId for Later handling of sound pool **/
+                                int soundId = sp.load(MainActivity.this, R.raw.apple_ring, 1); // in 2nd param u have to pass your desire ringtone
+                                sp.play(soundId, 1, 1, 0, 0, 1);
+                                streamMaxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING);
+                                mPlayer = MediaPlayer.create(MainActivity.this, R.raw.apple_ring); // in 2nd param u have to pass your desire ringtone
+                                mPlayer.start();
+                                //mPlayer.prepare();
+                            }
+                            e.printStackTrace();
                         }
-                        alarmPlay();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

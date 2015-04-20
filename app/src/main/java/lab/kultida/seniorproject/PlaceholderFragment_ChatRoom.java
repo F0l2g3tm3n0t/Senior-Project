@@ -141,6 +141,7 @@ public class PlaceholderFragment_ChatRoom extends PlaceholderFragment_Prototype 
                     String value[] = {data.getString("user"),data.getString("message"),data.getString("date"),data.getString("time"),data_frame.getString("fromMe")};
                     addChatMessage(data_frame);
                     database.insertData(database.getTABLE_ChatRoom(),database.getTable_ChatRoom_Column(),value);
+                    editText_ChatRoom.setText("");
 	            } catch (JSONException e) {
 		            e.printStackTrace();
 	            }

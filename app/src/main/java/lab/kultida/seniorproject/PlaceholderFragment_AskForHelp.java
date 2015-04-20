@@ -2,6 +2,7 @@ package lab.kultida.seniorproject;
 
 
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -103,7 +104,12 @@ public class PlaceholderFragment_AskForHelp extends PlaceholderFragment_Prototyp
 
     @Override
 		protected void onPostExecute(String result) {
-			textView_Output.append("Result : " + result + "\n");
+            AlertDialog.Builder adb_AskForHelp = new AlertDialog.Builder(activity);
+            adb_AskForHelp.setTitle("Ask For Help");
+            adb_AskForHelp.setMessage("Result : " + result);
+            adb_AskForHelp.setPositiveButton("OK", null);
+            adb_AskForHelp.show();
+            textView_Output.append("Result : " + result + "\n");
 		}
 	}
 }
